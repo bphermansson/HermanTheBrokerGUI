@@ -1,0 +1,31 @@
+﻿@page "/listhouses"
+@using HermanTheBrokerGUI.Services
+@using HermanTheBrokerGUI.Models
+
+<h3>Alla objekt</h3>
+@if (houseData != null)
+{
+    <ul>
+        @foreach (var item in houseData)
+        {
+            <li>@item.HouseId</li>
+            <li>@item.Street</li>
+
+        }
+    </ul>
+}
+else
+{
+    <p>Loading data...</p>
+}
+@code {
+    private IEnumerable<House> houseData;
+
+    [Inject]
+    private ApiService ApiService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        houseData = await ApiService.GetAllHouses<House>("https://localhost:7015/api/Visitor/Houses");
+    }
+}

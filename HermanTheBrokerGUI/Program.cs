@@ -15,14 +15,8 @@ builder.Services.AddHttpClient("MyApi", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7015/");
       });
-
 builder.Services.AddTransient<ApiService>();
 
-//builder.Services.AddScoped(sp =>
-//    new HttpClient
-//    {
-//        BaseAddress = new Uri(builder.Configuration["FrontendUrl"] ?? "https://localhost:7015")
-//    });
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
