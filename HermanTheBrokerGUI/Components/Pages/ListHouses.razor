@@ -8,8 +8,9 @@
     <ul>
         @foreach (var item in houseData)
         {
-            <li>@item.HouseId</li>
+            <li>Hus nummer @item.HouseId</li>
             <li>@item.Street</li>
+            <li><a href="/housedetails/@item.HouseId">Detaljer</a></li>
 
         }
     </ul>
@@ -26,6 +27,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        houseData = await ApiService.GetAllHouses<House>("https://localhost:7015/api/Visitor/Houses");
+        houseData = await ApiService.GetAllHouses<House>();
     }
 }

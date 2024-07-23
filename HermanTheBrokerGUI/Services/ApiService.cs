@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using HermanTheBrokerGUI.Models;
+using Newtonsoft.Json;
 
 namespace HermanTheBrokerGUI.Services
 {
@@ -22,9 +23,23 @@ namespace HermanTheBrokerGUI.Services
             }
             return default;
         }
-        public async Task<IEnumerable<T>> GetAllHouses<T>(string endpoint)
+        public async Task<IEnumerable<T>> GetById<T>(int houseId)
         {
-            var response = await _httpClient.GetAsync(endpoint);
+            var response = await _httpClient.GetAsync("https://localhost:7015/api/Visitor/HouseById?id="+houseId.ToString());
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<IEnumerable<T>>(content);
+
+
+            }
+            return default;
+        }
+        public async Task<IEnumerable<T>> GetAllHouses<T>()
+        {
+
+            var response = await _httpClient.GetAsync("https://localhost:7015/api/Visitor/Houses");
 
             if (response.IsSuccessStatusCode)
             {

@@ -1,0 +1,29 @@
+﻿@page "/housedetails/{id}"
+@using HermanTheBrokerGUI.Services
+@using HermanTheBrokerGUI.Models
+
+<h3>HouseDetails</h3>
+@if (houseData != null)
+{
+    @foreach (var item in @houseData)
+    {
+        <ul>
+            <li>@item.HouseId</li>
+            <li>@item.Street</li>
+        </ul>
+    }
+}
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private IEnumerable<House> houseData;
+
+    [Inject]
+    private ApiService ApiService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        houseData = await ApiService.GetById<House>(Int32.Parse(Id));
+    }
+}
