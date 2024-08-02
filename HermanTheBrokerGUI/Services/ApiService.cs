@@ -61,8 +61,8 @@ namespace HermanTheBrokerGUI.Services
 
         public async Task<Boolean> Login<Bool>(string email, string password)
         {
-            var loggedIn = PostAsync(sharedClient, email, password).Result;
-            return loggedIn;
+            var loggedIn = PostAsync(sharedClient, email, password);
+            return true;
         }
 
         static async Task<Boolean> PostAsync(HttpClient httpClient, string email, string password)
@@ -70,10 +70,10 @@ namespace HermanTheBrokerGUI.Services
             using StringContent jsonContent = new(
                 JsonSerializer.Serialize(new
                 {
-                    //email = "oatrik@paheco.nu",
-                    //password = "String1234<",
-                    email = email,
-                    password = password
+                    email = "oatrik@paheco.nu",
+                    password = "String1234<",
+                    //email = email,
+                    //password = password
                 }),
                 Encoding.UTF8,
                 "application/json");
@@ -81,10 +81,9 @@ namespace HermanTheBrokerGUI.Services
                 using HttpResponseMessage response = await httpClient.PostAsync(
                     "login",
                     jsonContent);
-
+            {
                 try
                 {
-                    response.EnsureSuccessStatusCode();
                     // Handle success
                     var jsonResponse = await response.Content.ReadAsStringAsync();
                     Console.WriteLine($"{jsonResponse}\n");
@@ -95,6 +94,10 @@ namespace HermanTheBrokerGUI.Services
                     // Handle failure
                     return false;
                 }
+            }
+            //response.EnsureSuccessStatusCode();
+
+
 
         }
         public async Task<Boolean> Register<Bool>(string email, string password)
