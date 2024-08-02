@@ -50,20 +50,7 @@ namespace HermanTheBrokerGUI.Services
                 return null;
             }
         }
-        public class loginData()
-        {
-            public string Email { get; set; }
-            public string Password { get; set; }
-            public bool TwoFactorCode { get; set; }
-            public bool TwoFactorRecoveryCode { get; set; }
-        }
-        public class altLoginData()
-        {
-            public string username { get; set; }
-            public string password { get; set; }
-        }
-
-            public record SampleValue(int Id, string Name);
+        //public record SampleValue(int Id, string Name);
 
         // HttpClient lifecycle management best practices:
         // https://learn.microsoft.com/dotnet/fundamentals/networking/http/httpclient-guidelines#recommended-use
@@ -74,18 +61,19 @@ namespace HermanTheBrokerGUI.Services
 
         public async Task<Boolean> Login<Bool>(string email, string password)
         {
-            PostAsync(sharedClient);
-            return true;
-
+            var loggedIn = PostAsync(sharedClient, email, password).Result;
+            return loggedIn;
         }
 
-        static async Task PostAsync(HttpClient httpClient)
+        static async Task<Boolean> PostAsync(HttpClient httpClient, string email, string password)
         {
             using StringContent jsonContent = new(
                 JsonSerializer.Serialize(new
                 {
-                    email = "oatrik@paheco.nu",
-                    password = "String1234<",
+                    //email = "oatrik@paheco.nu",
+                    //password = "String1234<",
+                    email = email,
+                    password = password
                 }),
                 Encoding.UTF8,
                 "application/json");
@@ -94,10 +82,25 @@ namespace HermanTheBrokerGUI.Services
                     "login",
                     jsonContent);
 
-                response.EnsureSuccessStatusCode();
+                try
+                {
+                    response.EnsureSuccessStatusCode();
+                    // Handle success
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"{jsonResponse}\n");
+                    return true;
+                }
+                catch (HttpRequestException)
+                {
+                    // Handle failure
+                    return false;
+                }
 
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"{jsonResponse}\n");
+        }
+        public async Task<Boolean> Register<Bool>(string email, string password)
+        {
+            var loggedIn = PostAsync(sharedClient, email, password).Result;
+            return loggedIn;
         }
     }
 }
