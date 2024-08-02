@@ -1,7 +1,5 @@
-﻿using HermanTheBrokerGUI.Models;
-using Newtonsoft.Json;
-using System.Net.WebSockets;
-using System.Text;
+﻿using System.Text;
+using System.Text.Json;
 
 namespace HermanTheBrokerGUI.Services
 {
@@ -21,7 +19,8 @@ namespace HermanTheBrokerGUI.Services
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<T>(content);
+                return JsonSerializer.Deserialize<T>(content);
+
             }
             return default;
         }
@@ -32,7 +31,8 @@ namespace HermanTheBrokerGUI.Services
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<T>>(content);
+                return JsonSerializer.Deserialize < IEnumerable<T>>(content);
+
             }
             return default;
         }
@@ -43,7 +43,7 @@ namespace HermanTheBrokerGUI.Services
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<T>>(content);
+                return JsonSerializer.Deserialize<IEnumerable<T>>(content);
             }
             else
             {
@@ -64,36 +64,40 @@ namespace HermanTheBrokerGUI.Services
         }
 
             public record SampleValue(int Id, string Name);
-        
-  // "email": "a@b.com",
-  // "password": "stringABC123<"
+
+        // HttpClient lifecycle management best practices:
+        // https://learn.microsoft.com/dotnet/fundamentals/networking/http/httpclient-guidelines#recommended-use
+        private static HttpClient sharedClient = new()
+        {
+            BaseAddress = new Uri("https://localhost:7015"),
+        };
 
         public async Task<Boolean> Login<Bool>(string email, string password)
         {
-            var sampleValue = new loginData();
-            sampleValue.Email = "a@b.com";
-            sampleValue.Password = "stringABC123<";
-            sampleValue.TwoFactorCode = false;
-            sampleValue.TwoFactorRecoveryCode = false;
+            PostAsync(sharedClient);
+            return true;
 
-            var lin = new altLoginData();
-            lin.username = "a@b.com";
-            lin.password = "stringABC123<";
+        }
 
-            var sampleValueJson = JsonConvert.SerializeObject(lin);
-            var stringData = new StringContent(sampleValueJson, Encoding.UTF8, "application/json");
+        static async Task PostAsync(HttpClient httpClient)
+        {
+            using StringContent jsonContent = new(
+                JsonSerializer.Serialize(new
+                {
+                    email = "oatrik@paheco.nu",
+                    password = "String1234<",
+                }),
+                Encoding.UTF8,
+                "application/json");
 
-            var response = await _httpClient.PostAsync("https://localhost:7015/login", stringData);
-            var content = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-            {
-                 content = await response.Content.ReadAsStringAsync();
-                return false;
-            }
-            else
-            {
-                return false;
-            }
+                using HttpResponseMessage response = await httpClient.PostAsync(
+                    "login",
+                    jsonContent);
+
+                response.EnsureSuccessStatusCode();
+
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"{jsonResponse}\n");
         }
     }
 }
