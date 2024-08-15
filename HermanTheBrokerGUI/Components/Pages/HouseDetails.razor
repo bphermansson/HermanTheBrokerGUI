@@ -2,14 +2,19 @@
 @using HermanTheBrokerGUI.Services
 @using HermanTheBrokerGUI.Models
 
-<h3>HouseDetails</h3>
+<h3>Detaljer om valt hus</h3>
 @if (houseData != null)
 {
 @*     @foreach (var item in @houseData)
     { *@
         <ul>
         <li>@houseData.HouseId</li>
-        <li>@houseData.Street</li>
+        <li>Byggår: @houseData.BuildYear</li>
+        <li>Boyta: @houseData.Area</li>
+        <li>Antal våningar: @houseData.NoOfFloors</li>
+        <li>Antal rum: @houseData.NoOfRooms</li>
+        <li>Gatuadress: @houseData.Street</li>
+        <li>Stad: @houseData.City</li>
         </ul>
     @* } *@
 }
