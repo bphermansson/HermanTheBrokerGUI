@@ -11,7 +11,7 @@
             <li>Hus nummer @item.HouseId</li>
             <li>@item.Street</li>
             <li><a href="/housedetails/@item.HouseId">Detaljer</a></li>
-
+            <hr />
         }
     </ul>
 }
@@ -27,6 +27,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        houseData = await ApiService.GetAllHouses<House>();
+        houseData = await ApiService.GetAllHouses();
     }
 }

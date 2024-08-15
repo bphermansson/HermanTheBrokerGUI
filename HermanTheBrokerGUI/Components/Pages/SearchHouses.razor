@@ -1,0 +1,77 @@
+﻿@page "/searchhouses"
+@using HermanTheBrokerAPI.Classes
+@using HermanTheBrokerGUI.Services
+@using HermanTheBrokerGUI.Models
+
+<div class="row">
+    <div class="col-md-4">
+        <form @onsubmit="Submit" method="post" @formname="search">
+            <AntiforgeryToken />
+            <h2>Sök hus</h2>
+            <div>
+                <label>
+                    Minsta area:
+                    <InputNumber @bind-Value="Searchobject!.Minsize" />
+                </label>
+            </div>
+            <div>
+                <label>
+                    Största area:
+                    <InputNumber @bind-Value="Searchobject!.Maxsize" />
+                </label>
+            </div>
+            <div>
+                <label>
+                    Stad:
+                    <InputText @bind-Value="Searchobject!.City" />
+                </label>
+            </div>
+            <div>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@output
+
+@code {
+    [SupplyParameterFromForm]
+    public Searchobject? Searchobject { get; set; }
+    protected override void OnInitialized() => Searchobject ??= new();
+    string output = "Test";
+    private async Task Submit()
+    {
+        var srch = new Searchobject();
+        srch.Minsize = Searchobject?.Minsize;
+        srch.Maxsize = Searchobject?.Maxsize;
+        srch.City = Searchobject?.City;
+        //House houseDataN = await ApiService.SearchHouses(srch);
+        IEnumerable<House> houseData;
+        //houseData = await ApiService.GetAllHouses();
+        //var houseData = ApiService.Test();
+        //var r = ApiService.NumberOfFreelancers();
+
+
+    }
+
+    // private IEnumerable<House> houseData;
+
+    // [Inject]
+    // private ApiService ApiService { get; set; }
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     //houseData = await ApiService.GetAllHouses<House>();
+    // }
+    // public void OnPost(int minarea, int maxarea, string city)
+    // {
+    //     var srch = new Searchobject();
+    //     srch.Minsize = Request.Form["emailaddress"];
+
+    //      = minarea;
+    //     srch.Maxsize = maxarea;
+    //     srch.City = city;
+    //     //houseData = await ApiService.SearchHouses()
+    
+}

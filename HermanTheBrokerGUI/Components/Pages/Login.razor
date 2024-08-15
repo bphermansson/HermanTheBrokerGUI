@@ -23,7 +23,7 @@
 @code {
     [SupplyParameterFromForm]
     public LoginInfo? Model { get; set; }
-    
+
     [Inject]
     private ApiService ApiService { get; set; }
     private bool loginResult;
@@ -32,7 +32,7 @@
 
     private async Task Submit()
     {
-        bool loginResult = await ApiService.Login<bool>(Model?.Name, Model?.Password);
+        loginResult = await ApiService.Login<bool>(Model?.Name, Model?.Password);
     }
 
     public class LoginInfo

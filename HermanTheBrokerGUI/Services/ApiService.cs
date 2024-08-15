@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using HermanTheBrokerAPI.Classes;
+using HermanTheBrokerGUI.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Text;
 using System.Text.Json;
 
 namespace HermanTheBrokerGUI.Services
@@ -6,62 +9,73 @@ namespace HermanTheBrokerGUI.Services
     public class ApiService
     {
         private readonly HttpClient _httpClient;
+        private Uri BaseAddress = new Uri("https://localhost:7015");
 
         public ApiService(HttpClient httpClient)
         {
             _httpClient = httpClient;
+
         }
 
-        public async Task<T> Get<T>(string endpoint)
-        {
-            var response = await _httpClient.GetAsync(endpoint);
+        //public async Task<T> Get<T>(string endpoint)
+        //{
+        //    var response = await _httpClient.GetAsync(endpoint);
 
-            if (response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<T>(content);
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        var content = await response.Content.ReadAsStringAsync();
+        //        return JsonSerializer.Deserialize<T>(content);
 
-            }
-            return default;
-        }
-        public async Task<IEnumerable<T>> GetById<T>(int houseId)
+        //    }
+        //    return default;
+        //}
+        //private static HttpClient sharedClient = new()
+        //{
+        //    BaseAddress = new Uri("https://localhost:7015"),
+        //};
+        public async Task<House> GetById(int houseId)
         {
             var response = await _httpClient.GetAsync("https://localhost:7015/api/Visitor/HouseById?id="+houseId.ToString());
 
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize < IEnumerable<T>>(content);
-
+                return JsonSerializer.Deserialize<House>(content);
             }
             return default;
         }
-        public async Task<IEnumerable<T>> GetAllHouses<T>()
+        public async Task<IEnumerable<House>> GetAllHouses()
         {
-            var response = await _httpClient.GetAsync("https://localhost:7015/api/Visitor/Houses");
+            var response = await _httpClient.GetAsync(BaseAddress + "api/Visitor/Houses");
 
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<IEnumerable<T>>(content);
+                return JsonSerializer.Deserialize<IEnumerable<House>>(content);
             }
             else
             {
                 return null;
             }
         }
-        //public record SampleValue(int Id, string Name);
 
-        // HttpClient lifecycle management best practices:
-        // https://learn.microsoft.com/dotnet/fundamentals/networking/http/httpclient-guidelines#recommended-use
-        private static HttpClient sharedClient = new()
+        public async Task<IEnumerable<House>> SearchHouses(Searchobject searchobject)
         {
-            BaseAddress = new Uri("https://localhost:7015"),
-        };
+            var response = await _httpClient.GetAsync(BaseAddress + "/api/Visitor/"+searchobject.Minsize+"/"+searchobject.Maxsize+"/"+searchobject.City+"/"+searchobject.Category);
 
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<IEnumerable<House>>(content);
+            }
+            else
+            {
+                return null;
+            }
+        }
         public async Task<Boolean> Login<Bool>(string email, string password)
         {
-            var loggedIn = PostAsync(sharedClient, email, password);
+            //var loggedIn = PostAsync(sharedClient, email, password);
             return true;
         }
 
@@ -70,10 +84,10 @@ namespace HermanTheBrokerGUI.Services
             using StringContent jsonContent = new(
                 JsonSerializer.Serialize(new
                 {
-                    email = "oatrik@paheco.nu",
-                    password = "String1234<",
-                    //email = email,
-                    //password = password
+                    //email = "oatrik@paheco.nu",
+                    //password = "String1234<",
+                    email = email,
+                    password = password
                 }),
                 Encoding.UTF8,
                 "application/json");
@@ -84,6 +98,7 @@ namespace HermanTheBrokerGUI.Services
             {
                 try
                 {
+                    response.EnsureSuccessStatusCode();
                     // Handle success
                     var jsonResponse = await response.Content.ReadAsStringAsync();
                     Console.WriteLine($"{jsonResponse}\n");
@@ -102,7 +117,7 @@ namespace HermanTheBrokerGUI.Services
         }
         public async Task<Boolean> Register<Bool>(string email, string password)
         {
-            var loggedIn = PostAsync(sharedClient, email, password).Result;
+            var loggedIn = PostAsync(_httpClient, email, password).Result;
             return loggedIn;
         }
     }

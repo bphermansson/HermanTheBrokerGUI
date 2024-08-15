@@ -31,7 +31,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        houseData = await ApiService.Get<House>("https://localhost:7015/api/Visitor/HouseById?id=2");
+        houseData = await ApiService.GetById(2);
     }
 
 }
