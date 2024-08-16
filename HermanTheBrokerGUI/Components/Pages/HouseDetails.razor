@@ -8,7 +8,7 @@
 @*     @foreach (var item in @houseData)
     { *@
         <ul>
-        <li>@houseData.HouseId</li>
+        <li>Hus nummer: @houseData.HouseId</li>
         <li>Byggår: @houseData.BuildYear</li>
         <li>Boyta: @houseData.Area</li>
         <li>Antal våningar: @houseData.NoOfFloors</li>
@@ -21,7 +21,6 @@
 @code {
     [Parameter]
     public string Id { get; set; }
-
     private House houseData;
 
     [Inject]

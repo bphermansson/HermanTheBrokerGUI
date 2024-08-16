@@ -5,9 +5,9 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form @onsubmit="Submit" method="post" @formname="search">
+        <form @onsubmit="SubmitArea" method="post" @formname="searchArea">
             <AntiforgeryToken />
-            <h2>Sök hus</h2>
+            <h2>Sök på storlek</h2>
             <div>
                 <label>
                     Minsta area:
@@ -21,57 +21,115 @@
                 </label>
             </div>
             <div>
-                <label>
-                    Stad:
-                    <InputText @bind-Value="Searchobject!.City" />
-                </label>
-            </div>
-            <div>
-                <button type="submit">Submit</button>
+                <button type="submit">Sök area</button>
             </div>
         </form>
     </div>
 </div>
 
-@output
+<div class="row">
+    <div class="col-md-4">
+        <form @onsubmit="SubmitCity" method="post" @formname="searchCity">
+            <AntiforgeryToken />
+            <h2>Sök i stad</h2>
+            <div>
+                <label>
+                    Önskad stad:
+                    <InputText @bind-Value="Searchobject!.City" />
+                </label>
+            </div>
+            <div>
+                <button type="submit">Sök stad</button>
+            </div>
+        </form>
+    </div>
+</div>
 
+<div class="row">
+    <div class="col-md-4">
+        <form @onsubmit="SubmitRooms" method="post" @formname="searchNoofrooms">
+            <AntiforgeryToken />
+            <h2>Sök på antal rum</h2>
+            <div>
+                <label>
+                    Antal rum:
+                    <InputNumber @bind-Value="Searchobject!.Noofrooms" />
+                </label>
+            </div>
+            <div>
+                <button type="submit">Sök antal rum</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (houseData != null)
+{
+    <hr />
+    <h2>Sökresultat</h2>
+    <ul>
+        @foreach (var item in houseData)
+        {
+            <p>Hus nummer @item.HouseId</p>
+            <li>@item.Category @item.Area m2</li>
+            <li>@item.Street, @item.City</li>
+            <li><a href="/housedetails/@item.HouseId">Detaljer</a></li>
+            <hr />
+        }
+    </ul>
+}
+else
+{
+    <p>Loading data...</p>
+}
 @code {
     [SupplyParameterFromForm]
     public Searchobject? Searchobject { get; set; }
     protected override void OnInitialized() => Searchobject ??= new();
-    string output = "Test";
-    private async Task Submit()
+    private IEnumerable<House> houseData;
+
+    [Inject]
+    private ApiService ApiService { get; set; }
+
+    private async Task SubmitArea()
     {
         var srch = new Searchobject();
+        if(srch.Minsize==null)
+        {
+            srch.Minsize = 0;
+        }
+        if (srch.Maxsize == null)
+        {
+            srch.Maxsize = 10000;
+        }
         srch.Minsize = Searchobject?.Minsize;
         srch.Maxsize = Searchobject?.Maxsize;
-        srch.City = Searchobject?.City;
-        //House houseDataN = await ApiService.SearchHouses(srch);
-        IEnumerable<House> houseData;
-        //houseData = await ApiService.GetAllHouses();
-        //var houseData = ApiService.Test();
-        //var r = ApiService.NumberOfFreelancers();
-
-
+        houseData = await ApiService.SearchHouses(srch);
     }
-
-    // private IEnumerable<House> houseData;
-
-    // [Inject]
-    // private ApiService ApiService { get; set; }
-
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     //houseData = await ApiService.GetAllHouses<House>();
-    // }
-    // public void OnPost(int minarea, int maxarea, string city)
-    // {
-    //     var srch = new Searchobject();
-    //     srch.Minsize = Request.Form["emailaddress"];
-
-    //      = minarea;
-    //     srch.Maxsize = maxarea;
-    //     srch.City = city;
-    //     //houseData = await ApiService.SearchHouses()
-    
+    private async Task SubmitRooms()
+    {
+        var srch = new Searchobject();
+        srch.Noofrooms = Searchobject?.Noofrooms;
+        if (srch.Noofrooms == null)
+        {
+            houseData = null;
+        }
+        else
+        {
+            houseData = await ApiService.SearchHouses(srch);
+        }
+    }
+    private async Task SubmitCity()
+    {
+        var srch = new Searchobject();
+        srch.City = Searchobject?.City;
+        if (srch.City == null)
+        {
+            houseData = null;
+        }
+        else
+        {
+            houseData = await ApiService.SearchHouses(srch);
+        }
+    }
 }

@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace HermanTheBrokerGUI.Models
 {
-	public class House
+    public enum Category
+    {
+        Bostadsrättslägenhet,
+        Bostadsrättsradhus,
+        Villa,
+        Fritidshus
+    }
+    public class House
 	{
 		[Key]
 		public int HouseId { get; set; }
@@ -17,5 +19,6 @@ namespace HermanTheBrokerGUI.Models
 		public int BuildYear { get; set; }
         public int NoOfFloors { get; set; }
         public int NoOfRooms { get; set; }
-	}
+        public Category? Category { get; set; }
+    }
 }

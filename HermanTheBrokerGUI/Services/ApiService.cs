@@ -61,7 +61,17 @@ namespace HermanTheBrokerGUI.Services
 
         public async Task<IEnumerable<House>> SearchHouses(Searchobject searchobject)
         {
-            var response = await _httpClient.GetAsync(BaseAddress + "/api/Visitor/"+searchobject.Minsize+"/"+searchobject.Maxsize+"/"+searchobject.City+"/"+searchobject.Category);
+            if (searchobject.Minsize == null)
+                searchobject.Minsize = 0;
+            if (searchobject.Maxsize == null)
+                searchobject.Maxsize = 0;
+            if (searchobject.City == null)
+                searchobject.City = "*";
+            if (searchobject.Noofrooms == null)
+                searchobject.Noofrooms = 0;
+
+            var response = await _httpClient.GetAsync(BaseAddress + "api/Visitor/Search/"+searchobject.Minsize+"/"+searchobject.Maxsize+"/"+searchobject.City+"/"+searchobject.Noofrooms);
+                                            //https://localhost:7015/api/Visitor/Search/0/0/Gr%C3%A4storp/0
 
             if (response.IsSuccessStatusCode)
             {
@@ -110,10 +120,6 @@ namespace HermanTheBrokerGUI.Services
                     return false;
                 }
             }
-            //response.EnsureSuccessStatusCode();
-
-
-
         }
         public async Task<Boolean> Register<Bool>(string email, string password)
         {
