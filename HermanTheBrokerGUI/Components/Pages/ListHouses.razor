@@ -8,10 +8,18 @@
     <ul>
         @foreach (var item in houseData)
         {
-            <li>Hus nummer @item.HouseId</li>
-            <li>@item.Street</li>
-            <li><a href="/housedetails/@item.HouseId">Detaljer</a></li>
-            <hr />
+            @if (item.Error == true)
+            {
+                @item.Status
+            }
+            else
+            {
+                <li>Hus nummer @item.HouseId</li>
+                <li>@item.Street</li>
+                <li><a href="/housedetails/@item.HouseId">Detaljer</a></li>
+                <li></li>
+                <hr />
+            }
         }
     </ul>
 }

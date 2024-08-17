@@ -1,17 +1,20 @@
 ﻿@page "/login"
+@using HermanTheBrokerGUI.Classes
 @using HermanTheBrokerGUI.Services
-<form method="post" @onsubmit="Submit" @formname="login">
+@using HermanTheBrokerGUI.Models
+
+<form method="post" @onsubmit="SubmitLogin" @formname="login">
     <AntiforgeryToken />
-    <div>
+     <div>
         <label>
             Name:
-            <InputText @bind-Value="Model!.Name" />
+             <InputText @bind-Value="Loginobject!.Email" />
         </label>
-    </div>
+    </div> 
     <div>
         <label>
             Password:
-            <InputText @bind-Value="Model!.Password" />
+             <InputText @bind-Value="Loginobject!.Password" />
         </label>
     </div>
     <div>
@@ -22,22 +25,28 @@
 
 @code {
     [SupplyParameterFromForm]
-    public LoginInfo? Model { get; set; }
+    public loginObject? Loginobject { get; set; }
+    protected override void OnInitialized() => Loginobject ??= new();
 
     [Inject]
     private ApiService ApiService { get; set; }
+
     private bool loginResult;
 
-    protected override void OnInitialized() => Model ??= new();
-
-    private async Task Submit()
+    protected override async Task OnInitializedAsync()
     {
-        loginResult = await ApiService.Login<bool>(Model?.Name, Model?.Password);
     }
 
-    public class LoginInfo
+    private async Task SubmitLogin()
     {
-        public string? Name { get; set; }
-        public string? Password { get; set; }
+
+        var lin = new loginObject()
+        {
+            Email = string.Empty,
+            Password = string.Empty
+        };
+        lin.Email = Loginobject?.Email;
+        lin.Password = Loginobject?.Password;
+        loginResult = await ApiService.Login(lin);
     }
 }

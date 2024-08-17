@@ -1,0 +1,24 @@
+﻿@page "/test"
+@using HermanTheBrokerGUI.Classes
+@using HermanTheBrokerGUI.Services
+<h3>Test</h3>
+
+Res: @res;
+
+@code {
+    [Inject]
+    private ApiService ApiService { get; set; }
+    private String res;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var r = Config.AuthToken;
+
+        Console.WriteLine(r);
+
+        res = await ApiService.Test();
+        Console.WriteLine(res);
+
+
+    }
+}

@@ -1,6 +1,10 @@
 ﻿using HermanTheBrokerAPI.Classes;
+using HermanTheBrokerGUI.Classes;
 using HermanTheBrokerGUI.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 
@@ -46,6 +50,7 @@ namespace HermanTheBrokerGUI.Services
         }
         public async Task<IEnumerable<House>> GetAllHouses()
         {
+            _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", Config.AuthToken);
             var response = await _httpClient.GetAsync(BaseAddress + "api/Visitor/Houses");
 
             if (response.IsSuccessStatusCode)
@@ -55,8 +60,17 @@ namespace HermanTheBrokerGUI.Services
             }
             else
             {
-                return null;
-            }
+                List<House> ErrorList = new List<House>()
+                {
+                    new House()
+                    {
+                       Status = "Ett fel uppstod.",
+                       Error = true
+                    }
+                };
+                IEnumerable<House> en = ErrorList;
+                return en;
+             }
         }
 
         public async Task<IEnumerable<House>> SearchHouses(Searchobject searchobject)
@@ -83,10 +97,38 @@ namespace HermanTheBrokerGUI.Services
                 return null;
             }
         }
-        public async Task<Boolean> Login<Bool>(string email, string password)
+
+        public async Task<String> Test()
         {
-            //var loggedIn = PostAsync(sharedClient, email, password);
-            return true;
+            var email = "a@a.com";
+            var password = "123qweE_";
+            HttpResponseMessage loginResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "login", new { email, password });
+
+            var loginContent = await loginResponse.Content.ReadFromJsonAsync<JsonElement>();
+            var accessToken = loginContent.GetProperty("accessToken").GetString();
+
+           //_httpClient.DefaultRequestHeaders.Authorization = new("Bearer", accessToken);
+
+            var response = await _httpClient.GetAsync(BaseAddress + "api/Visitor/Houses");
+
+            var resString = await _httpClient.GetStringAsync(BaseAddress + "requires-auth");
+            return resString;
+        }
+
+        public async Task<bool> Login(loginObject lin)
+        {
+            //email = "a@a.com";
+            //password = "123qweE_";
+            HttpResponseMessage loginResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "login", new { lin.Email, lin.Password });
+            //HttpResponseMessage loginResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "login?cookieMode=true", new { lin.Email, lin.Password });
+
+            if (loginResponse.IsSuccessStatusCode)
+            {
+                var loginContent = await loginResponse.Content.ReadFromJsonAsync<JsonElement>();
+                Config.AuthToken = loginContent.GetProperty("accessToken").GetString();
+                return true; 
+            }
+            return false;
         }
 
         static async Task<Boolean> PostAsync(HttpClient httpClient, string email, string password)
@@ -102,9 +144,9 @@ namespace HermanTheBrokerGUI.Services
                 Encoding.UTF8,
                 "application/json");
 
-                using HttpResponseMessage response = await httpClient.PostAsync(
-                    "login",
-                    jsonContent);
+            using HttpResponseMessage response = await httpClient.PostAsync(
+                "login",
+                jsonContent);
             {
                 try
                 {

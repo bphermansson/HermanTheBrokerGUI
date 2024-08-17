@@ -20,5 +20,7 @@ namespace HermanTheBrokerGUI.Models
         public int NoOfFloors { get; set; }
         public int NoOfRooms { get; set; }
         public Category? Category { get; set; }
+        public string Status { get; set; }
+        public bool Error { get; set; }
     }
 }
