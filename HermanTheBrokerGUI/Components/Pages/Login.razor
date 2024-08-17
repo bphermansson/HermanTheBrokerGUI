@@ -3,6 +3,8 @@
 @using HermanTheBrokerGUI.Services
 @using HermanTheBrokerGUI.Models
 
+<h3>Logga in</h3>
+
 <form method="post" @onsubmit="SubmitLogin" @formname="login">
     <AntiforgeryToken />
      <div>
@@ -18,10 +20,16 @@
         </label>
     </div>
     <div>
-        <button type="submit">Logga in</button>
+        <label>Nytt konto?</label>
+        <InputCheckbox @bind-Value="Loginobject!.Register"></InputCheckbox>
+    </div>
+    <div>
+        <button type="submit">Logga in/Registrera</button>
     </div>
 </form>
-@loginResult
+
+@loginMessage
+@regMessage
 
 @code {
     [SupplyParameterFromForm]
@@ -31,7 +39,8 @@
     [Inject]
     private ApiService ApiService { get; set; }
 
-    private bool loginResult;
+    private bool loginResult, regResult;
+    private string loginMessage, regMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -39,14 +48,38 @@
 
     private async Task SubmitLogin()
     {
-
         var lin = new loginObject()
         {
             Email = string.Empty,
-            Password = string.Empty
+            Password = string.Empty,
+            Register = false
         };
         lin.Email = Loginobject?.Email;
         lin.Password = Loginobject?.Password;
-        loginResult = await ApiService.Login(lin);
+        lin.Register = Loginobject.Register;
+        if(lin.Register == false)
+        {
+            loginResult = await ApiService.Login(lin);
+            if (loginResult == true)
+            {
+                loginMessage = "Inloggad.";
+            }
+            else
+            {
+                loginMessage = "Fel användarnamn/lösenord.";
+            }
+        }
+        else
+        {
+            regResult = await ApiService.Register(lin);
+            if (regResult == true)
+            {
+                regMessage = "Konto registrerat.";
+            }
+            else
+            {
+                regMessage = "Något gick fel.";
+            }
+        }
     }
 }

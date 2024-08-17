@@ -126,18 +126,29 @@ namespace HermanTheBrokerGUI.Services
             {
                 var loginContent = await loginResponse.Content.ReadFromJsonAsync<JsonElement>();
                 Config.AuthToken = loginContent.GetProperty("accessToken").GetString();
+                Config.RefreshToken = loginContent.GetProperty("refreshToken").GetString();
                 return true; 
             }
             return false;
         }
+        public async Task<bool> Register(loginObject lin)
+        {
+            HttpResponseMessage regResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "register", new { lin.Email, lin.Password });
+            //var lc = await regResponse.Content.ReadFromJsonAsync<JsonElement>();    // Can be used to check for errors
 
+
+            if (regResponse.IsSuccessStatusCode)
+            {
+                //var loginContent = await regResponse.Content.ReadFromJsonAsync<JsonElement>();
+                return true;
+            }
+            return false;
+        }
         static async Task<Boolean> PostAsync(HttpClient httpClient, string email, string password)
         {
             using StringContent jsonContent = new(
                 JsonSerializer.Serialize(new
                 {
-                    //email = "oatrik@paheco.nu",
-                    //password = "String1234<",
                     email = email,
                     password = password
                 }),
@@ -163,10 +174,6 @@ namespace HermanTheBrokerGUI.Services
                 }
             }
         }
-        public async Task<Boolean> Register<Bool>(string email, string password)
-        {
-            var loggedIn = PostAsync(_httpClient, email, password).Result;
-            return loggedIn;
-        }
+
     }
 }
