@@ -39,19 +39,20 @@ namespace HermanTheBrokerGUI.Services
         //};
         public async Task<House> GetById(int houseId)
         {
-            var response = await _httpClient.GetAsync("https://localhost:7015/api/Visitor/HouseById?id="+houseId.ToString());
+            var response = await _httpClient.GetAsync("https://localhost:7015/api/House/HouseById?id=" + houseId.ToString());
 
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<House>(content);
+
             }
             return default;
         }
         public async Task<IEnumerable<House>> GetAllHouses()
         {
             _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", Config.AuthToken);
-            var response = await _httpClient.GetAsync(BaseAddress + "api/Visitor/Houses");
+            var response = await _httpClient.GetAsync(BaseAddress + "api/House/Houses");
 
             if (response.IsSuccessStatusCode)
             {
@@ -84,9 +85,7 @@ namespace HermanTheBrokerGUI.Services
             if (searchobject.Noofrooms == null)
                 searchobject.Noofrooms = 0;
 
-            var response = await _httpClient.GetAsync(BaseAddress + "api/Visitor/Search/"+searchobject.Minsize+"/"+searchobject.Maxsize+"/"+searchobject.City+"/"+searchobject.Noofrooms);
-                                            //https://localhost:7015/api/Visitor/Search/0/0/Gr%C3%A4storp/0
-
+            var response = await _httpClient.GetAsync(BaseAddress + "api/House/Search/" + searchobject.Minsize+"/"+searchobject.Maxsize+"/"+searchobject.City+"/"+searchobject.Noofrooms);
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -135,8 +134,6 @@ namespace HermanTheBrokerGUI.Services
         {
             HttpResponseMessage regResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "register", new { lin.Email, lin.Password });
             //var lc = await regResponse.Content.ReadFromJsonAsync<JsonElement>();    // Can be used to check for errors
-
-
             if (regResponse.IsSuccessStatusCode)
             {
                 //var loginContent = await regResponse.Content.ReadFromJsonAsync<JsonElement>();
@@ -174,6 +171,25 @@ namespace HermanTheBrokerGUI.Services
                 }
             }
         }
-
+        public async Task<bool> Newhouse(House house)
+        {
+            HttpResponseMessage addResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "api/House/NewHouse", house);
+            //var lc = await addResponse.Content.ReadFromJsonAsync<JsonElement>();    // Can be used to check for errors
+            if (addResponse.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            return false;
+        }
+        public async Task<bool> Edithouse(House house)
+        {
+            HttpResponseMessage addResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "api/House/EditHouse", house);
+            //var lc = await addResponse.Content.ReadFromJsonAsync<JsonElement>();    // Can be used to check for errors
+            if (addResponse.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

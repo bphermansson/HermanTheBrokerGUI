@@ -1,0 +1,52 @@
+﻿@page "/newhouse"
+@using HermanTheBrokerGUI.Models
+@using HermanTheBrokerGUI.Services
+
+<h3>Lägg till hus</h3>
+<EditForm Model="Model" OnSubmit="Submit" FormName="newhouse">
+    <div>
+        <label>
+            Gata:
+            <InputText @bind-Value="Model!.Street" />
+        </label>
+        <label>
+            Stad: 
+            <InputText @bind-Value="Model!.City" />
+        </label>
+        <label>
+            Area:
+            <InputNumber @bind-Value="Model!.Area" />
+        </label>
+        <label>
+            Byggår:
+            <InputNumber @bind-Value="Model!.BuildYear" />
+        </label>
+        <label>
+            Antal våningar:
+            <InputNumber @bind-Value="Model!.NoOfFloors" />
+        </label>
+        <label>
+            Antal rum:
+            <InputNumber @bind-Value="Model!.NoOfRooms" />
+        </label>
+        <label>
+        </label>
+    </div>
+    <div>
+        <button type="submit">Lägg till</button>
+    </div>
+</EditForm>
+@code {
+    [SupplyParameterFromForm]
+    public House? Model { get; set; }
+
+    [Inject]
+    private ApiService ApiService { get; set; }
+
+    protected override void OnInitialized() => Model ??= new();
+
+    private async Task Submit()
+    {
+        var res = await ApiService.Newhouse(Model);
+    }
+}

@@ -5,18 +5,15 @@
 <h3>Detaljer om valt hus</h3>
 @if (houseData != null)
 {
-@*     @foreach (var item in @houseData)
-    { *@
         <ul>
-        <li>Hus nummer: @houseData.HouseId</li>
-        <li>Byggår: @houseData.BuildYear</li>
-        <li>Boyta: @houseData.Area</li>
-        <li>Antal våningar: @houseData.NoOfFloors</li>
-        <li>Antal rum: @houseData.NoOfRooms</li>
-        <li>Gatuadress: @houseData.Street</li>
-        <li>Stad: @houseData.City</li>
+            <li>hus nummer: @houseData.HouseId</li>
+            <li>byggår: @houseData.BuildYear</li>
+            <li>boyta: @houseData.Area</li>
+            <li>antal våningar: @houseData.NoOfFloors</li>
+            <li>antal rum: @houseData.NoOfRooms</li>
+            <li>gatuadress: @houseData.Street</li>
+            <li>stad: @houseData.City</li>
         </ul>
-    @* } *@
 }
 @code {
     [Parameter]

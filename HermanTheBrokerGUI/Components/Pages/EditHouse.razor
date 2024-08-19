@@ -1,0 +1,127 @@
+﻿@page "/edithouse/{id}"
+@using HermanTheBrokerGUI.Models
+@using HermanTheBrokerGUI.Services
+@using HermanTheBrokerAPI.Classes
+
+<h3>Redigera hus</h3>
+
+@* <EditForm Model="@Command" method="post" OnValidSubmit="SubmitEdit" FormName="checkout">
+        <DataAnnotationsValidator/>
+
+        <h4>Bill To:</h4>
+    <InputText @bind-Value="Command.City" />
+
+@*         <h4>Ship To:</h4>
+        <AddressEntry @bind-Value="Command.ShippingAddress"/> 
+
+        <button type="submit">Place Order</button>
+        <ValidationSummary/>
+    </EditForm> *@
+
+<EditForm Model="@FormValues" method="post" OnValidSubmit="SubmitEdit" FormName="edithouse">
+    <div>
+        <label>
+            :
+            <InputNumber @bind-Value="FormValues.ID" />
+        </label>
+        <label>
+            :
+            <InputNumber @bind-Value="FormValues.HouseId" />
+        </label>
+        <label>
+            Gata:
+            <InputText @bind-Value="FormValues.Street" />
+        </label>
+        <label>
+            Stad: 
+            <InputText @bind-Value="FormValues!.City" />
+        </label>
+        <label>
+            Area:
+            <InputNumber @bind-Value="FormValues!.Area" />
+        </label>
+        <label>
+            Byggår:
+            <InputNumber @bind-Value="FormValues!.BuildYear" />
+        </label>
+        <label>
+            Antal våningar:
+            <InputNumber @bind-Value="FormValues!.NoOfFloors" />
+        </label>
+        <label>
+            Antal rum:
+            <InputNumber @bind-Value="FormValues!.NoOfRooms" />
+        </label>
+@*         <label>
+            :
+            <InputNumber @bind-Value="FormValues.Category" />
+        </label> *@
+        <label>
+            :
+            <InputSelect @bind-Value="FormValues.Error" />
+        </label>
+        <label>
+            :
+            <InputText @bind-Value="FormValues.Status" />
+        </label>
+    </div>
+    <div>
+        <button>Spara</button>
+    </div>
+</EditForm>
+
+@if (submitted)
+{
+    <p>Hey, look at that, you placed the order!</p>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    [SupplyParameterFromForm]
+    House FormValues { get; set; } = new();
+
+    [Inject]
+    private ApiService ApiService { get; set; }
+
+    bool submitted = false;
+    House NewValues { get; set; } = new();  //Values from db including concurrency token
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (FormValues.Area == 0)
+        {
+            NewValues = await ApiService.GetById(Int32.Parse(Id));
+
+            FormValues.ID = NewValues.ID;
+            FormValues.HouseId = NewValues.HouseId;
+            FormValues.Street = NewValues.Street;
+            FormValues.City = NewValues.City;
+            FormValues.Area = NewValues.Area;
+            FormValues.BuildYear = NewValues.BuildYear;
+            FormValues.NoOfFloors = NewValues.NoOfFloors;
+            FormValues.NoOfRooms = NewValues.NoOfRooms;
+            FormValues.Category = NewValues.Category;
+            FormValues.Error = NewValues.Error;
+            FormValues.Status = NewValues.Status;
+        }
+    }
+
+    private async Task SubmitEdit()
+    {
+        submitted = true;
+        NewValues.ID = FormValues.ID;
+        NewValues.HouseId = FormValues.HouseId;
+        NewValues.Street = FormValues.Street;
+        NewValues.City = FormValues.City;
+        NewValues.Area = FormValues.Area;
+        NewValues.BuildYear = FormValues.BuildYear;
+        NewValues.NoOfFloors = FormValues.NoOfFloors;
+        NewValues.NoOfRooms = FormValues.NoOfRooms;
+        NewValues.Category = FormValues.Category;
+        NewValues.Error = FormValues.Error;
+        NewValues.Status = FormValues.Status;
+        var res = await ApiService.Edithouse(NewValues);
+    }
+}

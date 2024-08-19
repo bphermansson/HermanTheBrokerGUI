@@ -11,8 +11,10 @@ namespace HermanTheBrokerGUI.Models
     }
     public class House
 	{
-		[Key]
-		public int HouseId { get; set; }
+		
+        public int ID { get; set; }
+        [Key]
+        public int HouseId { get; set; }
         public string Street { get; set; }
 		public string City { get; set; }
 		public int Area { get; set; }
