@@ -6,14 +6,14 @@
 
 <h3>Redigera hus</h3>
 
-<EditForm Model="@FormValues" method="post" OnValidSubmit="SubmitEdit" FormName="edithouse">
+<EditForm Model="@FormValues" OnValidSubmit="SubmitEdit" FormName="edithouse">
     <div>
         <label>
-            :
+            Id:
             <InputText @bind-Value="FormValues.Id" />
         </label>
         <label>
-            :
+            Hus Id:
             <InputNumber @bind-Value="FormValues.HouseId" />
         </label>
         <label>
@@ -40,26 +40,10 @@
             Antal rum:
             <InputNumber @bind-Value="FormValues!.NoOfRooms" />
         </label>
-@*         <label>
-            :
-            <InputNumber @bind-Value="FormValues.Category" />
-        </label> *@
         <label>
-            :
-            <InputSelect @bind-Value="FormValues.Error" />
-        </label>
-        <label>
-            :
-            <InputText @bind-Value="FormValues.Status" />
-        </label>
-        <label>
-            :
+            Mäklar id:
             <InputText @bind-Value="FormValues.BrokerId" />
         </label>
-        <Input @bind="FormValues.Broker">
-
-
-
     </div>
     <div>
         <button>Spara</button>
@@ -83,9 +67,6 @@
 
     bool submitted = false;
     House NewHouseValues { get; set; } = new();  //Values from db including concurrency token
-                                                 //IEnumerable<House> EditHouseValues = new(); 
-    public Broker broker;
-    Broker b;
 
     protected override async Task OnInitializedAsync()
     {
@@ -105,18 +86,14 @@
             FormValues.Status = NewHouseValues.Status;
             FormValues.BrokerId = NewHouseValues.BrokerId;
             FormValues.Broker = NewHouseValues.Broker;
-            b = NewHouseValues.Broker;
-            //var c = ApiService.GetBrokerByEmail("c.a.com");
-            //broker = c.Result;
-
         }
     }
 
     private async Task SubmitEdit()
     {
         submitted = true;
+        // Get values again, otherwise Broker gets lost in space...
         NewHouseValues = await ApiService.GetById(Int32.Parse(Id));
-
         NewHouseValues.Id = FormValues.Id;
         NewHouseValues.HouseId = FormValues.HouseId;
         NewHouseValues.Street = FormValues.Street;
@@ -126,11 +103,7 @@
         NewHouseValues.NoOfFloors = FormValues.NoOfFloors;
         NewHouseValues.NoOfRooms = FormValues.NoOfRooms;
         NewHouseValues.Category = FormValues.Category;
-        NewHouseValues.Error = FormValues.Error;
-        NewHouseValues.Status = FormValues.Status;
         NewHouseValues.BrokerId = FormValues.BrokerId;
-        //NewHouseValues.Broker = b;
-
         var res = await ApiService.Edithouse(NewHouseValues);
     }
 }

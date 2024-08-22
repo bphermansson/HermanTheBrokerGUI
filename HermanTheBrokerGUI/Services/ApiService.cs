@@ -151,9 +151,9 @@ namespace HermanTheBrokerGUI.Services
         }
         public async Task<bool> Edithouse(House house)
         {
-            HttpResponseMessage addResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "api/House/EditHouse", house);
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseAddress + "api/House/EditHouse", house);
             //var lc = await addResponse.Content.ReadFromJsonAsync<JsonElement>();    // Can be used to check for errors
-            if (addResponse.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
                 return true;
             }
@@ -161,9 +161,9 @@ namespace HermanTheBrokerGUI.Services
         }
         public async Task<bool> Removehouse(House house)
         {
-            HttpResponseMessage addResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "api/House/RemoveHouse", house);
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseAddress + "api/House/RemoveHouse", house);
             //var lc = await addResponse.Content.ReadFromJsonAsync<JsonElement>();    // Can be used to check for errors
-            if (addResponse.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
                 return true;
             }
@@ -171,8 +171,8 @@ namespace HermanTheBrokerGUI.Services
         }
         public async Task<bool> Editbroker(IdentityUser uid)
         {
-            HttpResponseMessage addResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "api/Broker/EditBroker", uid);
-            if (addResponse.IsSuccessStatusCode)
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseAddress + "api/Broker/EditBroker", uid);
+            if (response.IsSuccessStatusCode)
             {
                 return true;
             }
@@ -180,14 +180,9 @@ namespace HermanTheBrokerGUI.Services
         }
         public async Task<Broker> GetBrokerByEmail(string email)
         {
-            HttpResponseMessage addResponse = await _httpClient.GetAsync(BaseAddress + "api/Broker/" + email);
-            var lc = await addResponse.Content.ReadFromJsonAsync<JsonElement>();    // Can be used to check for errors
-            var ui = lc.Deserialize<Broker>();
-            return ui;
-            //if (addResponse.IsSuccessStatusCode)
-            //{
-            //    return ui;
-            //}
+            HttpResponseMessage response = await _httpClient.GetAsync(BaseAddress + "api/Broker/" + email);
+            var responseContent = await response.Content.ReadFromJsonAsync<JsonElement>();    // Can be used to check for errors
+            return responseContent.Deserialize<Broker>();
         }
     }
 }
