@@ -1,0 +1,143 @@
+﻿@page "/editbroker"
+@using HermanTheBrokerAPI.Areas.Identity.Data
+@using HermanTheBrokerGUI.Classes
+@using HermanTheBrokerGUI.Models
+@using HermanTheBrokerGUI.Services
+@using HermanTheBrokerAPI.Classes
+@using Microsoft.AspNetCore.Identity
+
+<h3>Redigera mäklare</h3>
+
+<EditForm Model="@FormValues" OnSubmit="SubmitEdit" FormName="edithouse">
+    <div>
+        <label>
+            Id:
+            <InputText @bind-Value="FormValues.Id" />
+        </label>
+
+        <label>
+            PhoneNumber:
+            <InputText @bind-Value="FormValues.PhoneNumber" />
+        </label>
+        <label>
+            Email:
+            <InputText @bind-Value="FormValues.Email" />
+        </label>
+        <label>
+            NormalizedUserName:
+            <InputText @bind-Value="FormValues.NormalizedUserName" />
+        </label>
+        <label>
+            UserName:
+            <InputText @bind-Value="FormValues.UserName" />
+        </label>
+        
+        <label>
+            LockoutEnd:
+            <InputDate @bind-Value="FormValues!.LockoutEnd" />
+        </label>
+        <label>
+            NormalizedEmail:
+            <InputText @bind-Value="FormValues!.NormalizedEmail" />
+        </label>
+        <label>
+            NormalizedUserName:
+            <InputText @bind-Value="FormValues!.NormalizedUserName" />
+        </label>
+        <label>
+            PasswordHash:
+            <InputText @bind-Value="FormValues!.PasswordHash" />
+        </label>
+        @*
+        <label>
+            Antal rum:
+            <InputNumber @bind-Value="FormValues!.NoOfRooms" />
+        </label> 
+                 <label>
+        :
+        <InputNumber @bind-Value="FormValues.Category" />
+        </label> *@
+@*         <label>
+            :
+            <InputSelect @bind-Value="FormValues.Error" />
+        </label>
+        <label>
+            :
+            <InputText @bind-Value="FormValues.Status" />
+        </label> *@
+    </div>
+    <div>
+        <button>Spara</button>
+    </div>
+</EditForm>
+
+@if (submitted)
+{
+    <p>Ändringar sparade.</p>
+}
+
+@code {
+    // [Parameter]
+    // public string Id { get; set; }
+
+    [SupplyParameterFromForm]
+    HermanTheBrokerAPIUser FormValues { get; set; } = new();
+
+    [Inject]
+    private ApiService ApiService { get; set; }
+
+    bool submitted = false;
+    IdentityUser NewValues { get; set; } = new();  //Values from db including concurrency token
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (FormValues.PhoneNumber == null)
+        {
+            var email = Config.CurrentEmail;
+
+            NewValues = await ApiService.GetBrokerByEmail(email);
+
+            FormValues.Id = NewValues.Id;
+            FormValues.PhoneNumber = NewValues.PhoneNumber;
+            FormValues.ConcurrencyStamp = NewValues.ConcurrencyStamp;
+            FormValues.SecurityStamp = NewValues.SecurityStamp;
+            //FormValues.Discriminator = NewValues.Discriminator;
+            FormValues.UserName = NewValues.UserName;
+            FormValues.NormalizedUserName = NewValues.NormalizedUserName;
+            FormValues.Email = NewValues.Email;
+            FormValues.NormalizedEmail = NewValues.NormalizedEmail;
+            FormValues.EmailConfirmed = NewValues.EmailConfirmed;
+            FormValues.PasswordHash = NewValues.PasswordHash;
+            FormValues.PhoneNumberConfirmed = NewValues.PhoneNumberConfirmed;
+            FormValues.TwoFactorEnabled = NewValues.TwoFactorEnabled;
+            FormValues.LockoutEnd = NewValues.LockoutEnd;
+            FormValues.LockoutEnabled = NewValues.LockoutEnabled;
+            FormValues.AccessFailedCount = NewValues.AccessFailedCount;
+
+
+
+        }
+    }
+
+    private async Task SubmitEdit()
+    {
+        submitted = true;
+        NewValues.Id = FormValues.Id;
+        NewValues.PhoneNumber = FormValues.PhoneNumber;
+        //NewValues.ConcurrencyStamp = FormValues.ConcurrencyStamp;
+        //NewValues.SecurityStamp = FormValues.SecurityStamp;
+
+        NewValues.UserName = FormValues.UserName;
+        NewValues.NormalizedUserName = FormValues.NormalizedUserName;
+        NewValues.Email = FormValues.Email;
+        NewValues.NormalizedEmail = FormValues.NormalizedEmail;
+        NewValues.EmailConfirmed = FormValues.EmailConfirmed;
+        NewValues.PasswordHash = FormValues.PasswordHash;
+        NewValues.PhoneNumberConfirmed = FormValues.PhoneNumberConfirmed;
+        NewValues.TwoFactorEnabled = FormValues.TwoFactorEnabled;
+        NewValues.LockoutEnd = FormValues.LockoutEnd;
+        NewValues.LockoutEnabled = FormValues.LockoutEnabled;
+        var res = await ApiService.Editbroker(NewValues);
+
+    }
+}

@@ -1,28 +1,16 @@
 ﻿@page "/edithouse/{id}"
+@using HermanTheBrokerAPI.Models
 @using HermanTheBrokerGUI.Models
 @using HermanTheBrokerGUI.Services
 @using HermanTheBrokerAPI.Classes
 
 <h3>Redigera hus</h3>
 
-@* <EditForm Model="@Command" method="post" OnValidSubmit="SubmitEdit" FormName="checkout">
-        <DataAnnotationsValidator/>
-
-        <h4>Bill To:</h4>
-    <InputText @bind-Value="Command.City" />
-
-@*         <h4>Ship To:</h4>
-        <AddressEntry @bind-Value="Command.ShippingAddress"/> 
-
-        <button type="submit">Place Order</button>
-        <ValidationSummary/>
-    </EditForm> *@
-
 <EditForm Model="@FormValues" method="post" OnValidSubmit="SubmitEdit" FormName="edithouse">
     <div>
         <label>
             :
-            <InputNumber @bind-Value="FormValues.ID" />
+            <InputText @bind-Value="FormValues.Id" />
         </label>
         <label>
             :
@@ -64,6 +52,14 @@
             :
             <InputText @bind-Value="FormValues.Status" />
         </label>
+        <label>
+            :
+            <InputText @bind-Value="FormValues.BrokerId" />
+        </label>
+        <Input @bind="FormValues.Broker">
+
+
+
     </div>
     <div>
         <button>Spara</button>
@@ -72,7 +68,7 @@
 
 @if (submitted)
 {
-    <p>Hey, look at that, you placed the order!</p>
+    <p>Ändringar sparade.</p>
 }
 
 @code {
@@ -86,42 +82,55 @@
     private ApiService ApiService { get; set; }
 
     bool submitted = false;
-    House NewValues { get; set; } = new();  //Values from db including concurrency token
+    House NewHouseValues { get; set; } = new();  //Values from db including concurrency token
+                                                 //IEnumerable<House> EditHouseValues = new(); 
+    public Broker broker;
+    Broker b;
 
     protected override async Task OnInitializedAsync()
     {
         if (FormValues.Area == 0)
         {
-            NewValues = await ApiService.GetById(Int32.Parse(Id));
+            NewHouseValues = await ApiService.GetById(Int32.Parse(Id));
+            FormValues.Id = NewHouseValues.Id;
+            FormValues.HouseId = NewHouseValues.HouseId;
+            FormValues.Street = NewHouseValues.Street;
+            FormValues.City = NewHouseValues.City;
+            FormValues.Area = NewHouseValues.Area;
+            FormValues.BuildYear = NewHouseValues.BuildYear;
+            FormValues.NoOfFloors = NewHouseValues.NoOfFloors;
+            FormValues.NoOfRooms = NewHouseValues.NoOfRooms;
+            FormValues.Category = NewHouseValues.Category;
+            FormValues.Error = NewHouseValues.Error;
+            FormValues.Status = NewHouseValues.Status;
+            FormValues.BrokerId = NewHouseValues.BrokerId;
+            FormValues.Broker = NewHouseValues.Broker;
+            b = NewHouseValues.Broker;
+            //var c = ApiService.GetBrokerByEmail("c.a.com");
+            //broker = c.Result;
 
-            FormValues.ID = NewValues.ID;
-            FormValues.HouseId = NewValues.HouseId;
-            FormValues.Street = NewValues.Street;
-            FormValues.City = NewValues.City;
-            FormValues.Area = NewValues.Area;
-            FormValues.BuildYear = NewValues.BuildYear;
-            FormValues.NoOfFloors = NewValues.NoOfFloors;
-            FormValues.NoOfRooms = NewValues.NoOfRooms;
-            FormValues.Category = NewValues.Category;
-            FormValues.Error = NewValues.Error;
-            FormValues.Status = NewValues.Status;
         }
     }
 
     private async Task SubmitEdit()
     {
         submitted = true;
-        NewValues.ID = FormValues.ID;
-        NewValues.HouseId = FormValues.HouseId;
-        NewValues.Street = FormValues.Street;
-        NewValues.City = FormValues.City;
-        NewValues.Area = FormValues.Area;
-        NewValues.BuildYear = FormValues.BuildYear;
-        NewValues.NoOfFloors = FormValues.NoOfFloors;
-        NewValues.NoOfRooms = FormValues.NoOfRooms;
-        NewValues.Category = FormValues.Category;
-        NewValues.Error = FormValues.Error;
-        NewValues.Status = FormValues.Status;
-        var res = await ApiService.Edithouse(NewValues);
+        NewHouseValues = await ApiService.GetById(Int32.Parse(Id));
+
+        NewHouseValues.Id = FormValues.Id;
+        NewHouseValues.HouseId = FormValues.HouseId;
+        NewHouseValues.Street = FormValues.Street;
+        NewHouseValues.City = FormValues.City;
+        NewHouseValues.Area = FormValues.Area;
+        NewHouseValues.BuildYear = FormValues.BuildYear;
+        NewHouseValues.NoOfFloors = FormValues.NoOfFloors;
+        NewHouseValues.NoOfRooms = FormValues.NoOfRooms;
+        NewHouseValues.Category = FormValues.Category;
+        NewHouseValues.Error = FormValues.Error;
+        NewHouseValues.Status = FormValues.Status;
+        NewHouseValues.BrokerId = FormValues.BrokerId;
+        //NewHouseValues.Broker = b;
+
+        var res = await ApiService.Edithouse(NewHouseValues);
     }
 }

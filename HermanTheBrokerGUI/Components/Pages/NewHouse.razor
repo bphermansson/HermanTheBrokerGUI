@@ -36,6 +36,12 @@
         <button type="submit">Lägg till</button>
     </div>
 </EditForm>
+
+@if (submitted)
+{
+    <p>Hus tillagt.</p>
+}
+
 @code {
     [SupplyParameterFromForm]
     public House? Model { get; set; }
@@ -44,9 +50,11 @@
     private ApiService ApiService { get; set; }
 
     protected override void OnInitialized() => Model ??= new();
+    bool submitted = false;
 
     private async Task Submit()
     {
+        submitted = true;
         var res = await ApiService.Newhouse(Model);
     }
 }

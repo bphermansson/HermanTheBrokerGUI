@@ -1,0 +1,41 @@
+﻿@page "/deletehouse/{id}"
+@using HermanTheBrokerGUI.Models
+@using HermanTheBrokerGUI.Services
+
+<h3>Ta bort hus</h3>
+<EditForm Model="@Confirm" method="post" OnValidSubmit="SubmitEdit" FormName="removehouse">
+    <div>
+        <label>
+            Ta bort detta hus?
+        </label>
+    </div>
+    <div>
+        <button>Ta bort</button>
+    </div>
+</EditForm>
+
+@if (submitted)
+{
+    <p>Hus borttaget.</p>
+}
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    [Inject]
+    private ApiService ApiService { get; set; }
+
+    bool submitted = false;
+    //IEnumerable<House> HouseToDelete { get; set; } = new();  
+
+    [SupplyParameterFromForm]
+    House FormValues { get; set; } = new();
+    bool Confirm = false;
+
+    private async Task SubmitEdit()
+    {
+        House HouseToDelete = await ApiService.GetById(Int32.Parse(Id));
+
+        submitted = true;
+        var res = await ApiService.Removehouse(HouseToDelete);
+    }
+}

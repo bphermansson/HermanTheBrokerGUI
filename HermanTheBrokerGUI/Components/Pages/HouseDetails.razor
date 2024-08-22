@@ -25,6 +25,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        houseData = await ApiService.GetById(Int32.Parse(Id));
+        House Data = await ApiService.GetById(Int32.Parse(Id));
+        houseData = Data;
     }
 }

@@ -16,8 +16,15 @@
             {
                 <li>Hus nummer @item.HouseId</li>
                 <li>@item.Street</li>
-                <li><a href="/housedetails/@item.HouseId">Detaljer</a></li>
-                <li></li>
+                <a class="nav-link" href="/housedetails/@item.HouseId">
+                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Detaljer
+                </a>
+                <a class="nav-link" href="edithouse/@item.HouseId">
+                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Redigera hus
+                </a>
+                <a class="nav-link" href="deletehouse/@item.HouseId">
+                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Ta bort hus
+                </a>
                 <hr />
             }
         }

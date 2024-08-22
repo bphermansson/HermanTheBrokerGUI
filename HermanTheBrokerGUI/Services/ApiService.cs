@@ -1,10 +1,9 @@
-﻿using HermanTheBrokerAPI.Classes;
+﻿using HermanTheBrokerAPI.Areas.Identity.Data;
+using HermanTheBrokerAPI.Classes;
+using HermanTheBrokerAPI.Models;
 using HermanTheBrokerGUI.Classes;
 using HermanTheBrokerGUI.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Identity;
 using System.Text;
 using System.Text.Json;
 
@@ -21,22 +20,6 @@ namespace HermanTheBrokerGUI.Services
 
         }
 
-        //public async Task<T> Get<T>(string endpoint)
-        //{
-        //    var response = await _httpClient.GetAsync(endpoint);
-
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        var content = await response.Content.ReadAsStringAsync();
-        //        return JsonSerializer.Deserialize<T>(content);
-
-        //    }
-        //    return default;
-        //}
-        //private static HttpClient sharedClient = new()
-        //{
-        //    BaseAddress = new Uri("https://localhost:7015"),
-        //};
         public async Task<House> GetById(int houseId)
         {
             var response = await _httpClient.GetAsync("https://localhost:7015/api/House/HouseById?id=" + houseId.ToString());
@@ -44,6 +27,8 @@ namespace HermanTheBrokerGUI.Services
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
+                //IEnumerable<House> house = await response.Content.ReadAsStringAsync();
+
                 return JsonSerializer.Deserialize<House>(content);
 
             }
@@ -97,35 +82,18 @@ namespace HermanTheBrokerGUI.Services
             }
         }
 
-        public async Task<String> Test()
-        {
-            var email = "a@a.com";
-            var password = "123qweE_";
-            HttpResponseMessage loginResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "login", new { email, password });
-
-            var loginContent = await loginResponse.Content.ReadFromJsonAsync<JsonElement>();
-            var accessToken = loginContent.GetProperty("accessToken").GetString();
-
-           //_httpClient.DefaultRequestHeaders.Authorization = new("Bearer", accessToken);
-
-            var response = await _httpClient.GetAsync(BaseAddress + "api/Visitor/Houses");
-
-            var resString = await _httpClient.GetStringAsync(BaseAddress + "requires-auth");
-            return resString;
-        }
-
         public async Task<bool> Login(loginObject lin)
         {
             //email = "a@a.com";
             //password = "123qweE_";
             HttpResponseMessage loginResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "login", new { lin.Email, lin.Password });
-            //HttpResponseMessage loginResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "login?cookieMode=true", new { lin.Email, lin.Password });
 
             if (loginResponse.IsSuccessStatusCode)
             {
                 var loginContent = await loginResponse.Content.ReadFromJsonAsync<JsonElement>();
                 Config.AuthToken = loginContent.GetProperty("accessToken").GetString();
                 Config.RefreshToken = loginContent.GetProperty("refreshToken").GetString();
+                Config.CurrentEmail = lin.Email;
                 return true; 
             }
             return false;
@@ -190,6 +158,36 @@ namespace HermanTheBrokerGUI.Services
                 return true;
             }
             return false;
+        }
+        public async Task<bool> Removehouse(House house)
+        {
+            HttpResponseMessage addResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "api/House/RemoveHouse", house);
+            //var lc = await addResponse.Content.ReadFromJsonAsync<JsonElement>();    // Can be used to check for errors
+            if (addResponse.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            return false;
+        }
+        public async Task<bool> Editbroker(IdentityUser uid)
+        {
+            HttpResponseMessage addResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "api/Broker/EditBroker", uid);
+            if (addResponse.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            return false;
+        }
+        public async Task<Broker> GetBrokerByEmail(string email)
+        {
+            HttpResponseMessage addResponse = await _httpClient.GetAsync(BaseAddress + "api/Broker/" + email);
+            var lc = await addResponse.Content.ReadFromJsonAsync<JsonElement>();    // Can be used to check for errors
+            var ui = lc.Deserialize<Broker>();
+            return ui;
+            //if (addResponse.IsSuccessStatusCode)
+            //{
+            //    return ui;
+            //}
         }
     }
 }
