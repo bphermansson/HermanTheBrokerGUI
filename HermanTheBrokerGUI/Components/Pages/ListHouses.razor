@@ -5,8 +5,6 @@
 
 <h3>Alla objekt</h3>
 
-@loginMess
-
 @if (houseData != null)
 {
     <ul>
@@ -40,8 +38,6 @@ else
 }
 @code {
     private IEnumerable<House> houseData;
-    private bool loggedIn;
-    private string loginMess;
 
     [Inject]
     private ApiService ApiService { get; set; }
@@ -49,7 +45,5 @@ else
     protected override async Task OnInitializedAsync()
     {
         houseData = await ApiService.GetAllHouses();
-        var c = ApiService.LoginCheck();
-        String login = c is true ? loginMess = "Inloggad" : loginMess = "Utloggad";
     }
 }

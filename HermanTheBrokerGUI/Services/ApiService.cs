@@ -37,7 +37,7 @@ namespace HermanTheBrokerGUI.Services
         }
         public async Task<IEnumerable<House>> GetAllHouses()
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", Config.AuthToken);
+            //_httpClient.DefaultRequestHeaders.Authorization = new("Bearer", Config.AuthToken);
             var response = await _httpClient.GetAsync(BaseAddress + "api/House/Houses");
 
             if (response.IsSuccessStatusCode)
@@ -45,21 +45,20 @@ namespace HermanTheBrokerGUI.Services
                 var content = await response.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<IEnumerable<House>>(content);
             }
-            else
-            {
-                List<House> ErrorList = new List<House>()
-                {
-                    new House()
-                    {
-                       Status = "Ett fel uppstod.",
-                       Error = true
-                    }
-                };
-                IEnumerable<House> en = ErrorList;
-                return en;
-             }
+            return default;
         }
+        public async Task<IEnumerable<House>> GetHousesByBrokerEmail(string email)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", Config.AuthToken);
+            var response = await _httpClient.GetAsync(BaseAddress + "api/Broker/GetHousesByBrokerEmail?email=" + email);
 
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<IEnumerable<House>>(content);
+            }
+            return default;
+        }
         public async Task<IEnumerable<House>> SearchHouses(Searchobject searchobject)
         {
             if (searchobject.Minsize == null)

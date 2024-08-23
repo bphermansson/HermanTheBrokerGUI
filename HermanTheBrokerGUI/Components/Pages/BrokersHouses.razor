@@ -1,0 +1,19 @@
+﻿@page "/getBrokerByEmail"
+@using HermanTheBrokerGUI.Classes
+@using HermanTheBrokerGUI.Models
+@using HermanTheBrokerGUI.Services
+
+<h3>Mina objekt</h3>
+<HouseList></HouseList>
+@code {
+    private IEnumerable<House> houseData;
+
+    [Inject]
+    private ApiService ApiService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var email = Config.CurrentEmail;
+        houseData = await ApiService.GetHousesByBrokerEmail(email);
+    }
+}
