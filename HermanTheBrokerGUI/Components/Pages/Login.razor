@@ -28,8 +28,13 @@
     </div>
 </form>
 
-@loginMessage
-@regMessage
+@loginResult
+@regResult
+<div class="nav-item px-3">
+    <NavLink class="nav-link" href="/">
+        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Hem
+    </NavLink>
+</div>
 
 @code {
     [SupplyParameterFromForm]
@@ -39,12 +44,7 @@
     [Inject]
     private ApiService ApiService { get; set; }
 
-    private bool loginResult, regResult;
-    private string loginMessage, regMessage;
-
-    protected override async Task OnInitializedAsync()
-    {
-    }
+    private string loginResult, regResult;
 
     private async Task SubmitLogin()
     {
@@ -60,26 +60,10 @@
         if(lin.Register == false)
         {
             loginResult = await ApiService.Login(lin);
-            if (loginResult == true)
-            {
-                loginMessage = "Inloggad.";
-            }
-            else
-            {
-                loginMessage = "Fel användarnamn/lösenord.";
-            }
         }
         else
         {
             regResult = await ApiService.Register(lin);
-            if (regResult == true)
-            {
-                regMessage = "Konto registrerat.";
-            }
-            else
-            {
-                regMessage = "Något gick fel.";
-            }
         }
     }
 }

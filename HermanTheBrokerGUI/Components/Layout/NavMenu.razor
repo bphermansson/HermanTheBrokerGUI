@@ -1,4 +1,8 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using HermanTheBrokerGUI.Classes
+@using HermanTheBrokerGUI.Services
+@using HermanTheBrokerGUI.Models
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">HermanTheBrokerGUI</a>
     </div>
@@ -29,26 +33,36 @@
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Logga in / Registrera
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="newhouse">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Lägg till hus
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="edithouse/3">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Redigera hus
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="test">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Test
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="editBroker">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Redigera min info
-            </NavLink>
-        </div>
+
+        @if (loggedIn == true)
+        {
+            <h3>Mäklarmeny</h3>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="newhouse">
+                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Lägg till hus
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="edithouse/3">
+                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Redigera hus
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="editBroker">
+                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Redigera min info
+                </NavLink>
+            </div>
+        }
     </nav>
 </div>
+@code
+{
+    [Inject]
+    private ApiService ApiService { get; set; }
+    private bool loggedIn;
 
+    protected override async Task OnInitializedAsync()
+    {
+        loggedIn = ApiService.LoginCheck();
+    }
+}

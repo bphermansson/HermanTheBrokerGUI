@@ -1,6 +1,5 @@
 using HermanTheBrokerGUI.Components;
 using HermanTheBrokerGUI.Services;
-using HermanTheBrokerGUI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

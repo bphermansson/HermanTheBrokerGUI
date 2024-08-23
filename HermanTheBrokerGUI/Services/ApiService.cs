@@ -4,6 +4,7 @@ using HermanTheBrokerAPI.Models;
 using HermanTheBrokerGUI.Classes;
 using HermanTheBrokerGUI.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 
@@ -82,11 +83,11 @@ namespace HermanTheBrokerGUI.Services
             }
         }
 
-        public async Task<bool> Login(loginObject lin)
+        public async Task<string> Login(loginObject lin)
         {
             //email = "a@a.com";
             //password = "123qweE_";
-            HttpResponseMessage loginResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "login", new { lin.Email, lin.Password });
+            HttpResponseMessage loginResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "identity/login", new { lin.Email, lin.Password });
 
             if (loginResponse.IsSuccessStatusCode)
             {
@@ -94,17 +95,42 @@ namespace HermanTheBrokerGUI.Services
                 Config.AuthToken = loginContent.GetProperty("accessToken").GetString();
                 Config.RefreshToken = loginContent.GetProperty("refreshToken").GetString();
                 Config.CurrentEmail = lin.Email;
-                return true; 
+                return "Inloggad"; 
             }
-            return false;
+            else
+            {
+                return "Fel användarnamn eller lösenord.";
+            }
         }
-        public async Task<bool> Register(loginObject lin)
+        public async Task<string> Register(loginObject lin)
         {
-            HttpResponseMessage regResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "register", new { lin.Email, lin.Password });
-            //var lc = await regResponse.Content.ReadFromJsonAsync<JsonElement>();    // Can be used to check for errors
+            HttpResponseMessage regResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "identity/register", new { lin.Email, lin.Password });
+
+
             if (regResponse.IsSuccessStatusCode)
             {
-                //var loginContent = await regResponse.Content.ReadFromJsonAsync<JsonElement>();
+                return "Kontot registrerat.";
+            }
+            else
+            {
+                // Get & decode response.
+                using var contentStream = await regResponse.Content.ReadAsStreamAsync();
+                var root = await JsonSerializer.DeserializeAsync<ResponseRoot>(contentStream);
+                if (root.errors != null) 
+                {
+                    return root.errors.DuplicateUserName[0].ToString();
+                }
+                if(regResponse.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+                {
+                    return "Serverfel.";
+                }
+            }
+            return "Okänt fel.";
+        }
+        public bool LoginCheck()
+        {
+            if (Config.AuthToken != null)
+            {
                 return true;
             }
             return false;
