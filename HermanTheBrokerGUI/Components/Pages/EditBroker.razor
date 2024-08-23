@@ -31,7 +31,6 @@
             UserName:
             <InputText @bind-Value="FormValues.UserName" />
         </label>
-        
         <label>
             LockoutEnd:
             <InputDate @bind-Value="FormValues!.LockoutEnd" />
@@ -48,23 +47,6 @@
             PasswordHash:
             <InputText @bind-Value="FormValues!.PasswordHash" />
         </label>
-        @*
-        <label>
-            Antal rum:
-            <InputNumber @bind-Value="FormValues!.NoOfRooms" />
-        </label> 
-                 <label>
-        :
-        <InputNumber @bind-Value="FormValues.Category" />
-        </label> *@
-@*         <label>
-            :
-            <InputSelect @bind-Value="FormValues.Error" />
-        </label>
-        <label>
-            :
-            <InputText @bind-Value="FormValues.Status" />
-        </label> *@
     </div>
     <div>
         <button>Spara</button>
@@ -88,7 +70,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (FormValues.PhoneNumber == null)
+        if (FormValues.Email == null)
         {
             var email = Config.CurrentEmail;
 
@@ -98,7 +80,6 @@
             FormValues.PhoneNumber = NewValues.PhoneNumber;
             FormValues.ConcurrencyStamp = NewValues.ConcurrencyStamp;
             FormValues.SecurityStamp = NewValues.SecurityStamp;
-            //FormValues.Discriminator = NewValues.Discriminator;
             FormValues.UserName = NewValues.UserName;
             FormValues.NormalizedUserName = NewValues.NormalizedUserName;
             FormValues.Email = NewValues.Email;
@@ -110,9 +91,6 @@
             FormValues.LockoutEnd = NewValues.LockoutEnd;
             FormValues.LockoutEnabled = NewValues.LockoutEnabled;
             FormValues.AccessFailedCount = NewValues.AccessFailedCount;
-
-
-
         }
     }
 
@@ -121,9 +99,6 @@
         submitted = true;
         NewValues.Id = FormValues.Id;
         NewValues.PhoneNumber = FormValues.PhoneNumber;
-        //NewValues.ConcurrencyStamp = FormValues.ConcurrencyStamp;
-        //NewValues.SecurityStamp = FormValues.SecurityStamp;
-
         NewValues.UserName = FormValues.UserName;
         NewValues.NormalizedUserName = FormValues.NormalizedUserName;
         NewValues.Email = FormValues.Email;

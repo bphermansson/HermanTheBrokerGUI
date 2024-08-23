@@ -1,5 +1,57 @@
-﻿<h3>HouseList</h3>
+﻿@using HermanTheBrokerGUI.Classes
+@using HermanTheBrokerGUI.Models
+@using HermanTheBrokerGUI.Services
+<h3>HouseList</h3>
+@if (houseData != null)
+{
+    <ul>
+        @foreach (var item in houseData)
+        {
+            @if (item.Error == true)
+            {
+                @item.Status
+            }
+            else
+            {
+                <li>Hus nummer @item.HouseId</li>
+                <li>@item.Street</li>
+                <a class="nav-link" href="/housedetails/@item.HouseId">
+                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Detaljer
+                </a>
+                <a class="nav-link" href="edithouse/@item.HouseId">
+                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Redigera hus
+                </a>
+                <a class="nav-link" href="deletehouse/@item.HouseId">
+                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Ta bort hus
+                </a>
+                <hr />
+            }
+        }
+    </ul>
+}
+else
+{
+    <p>Loading data...</p>
+}
 
 @code {
+    [Parameter]
+    public listData listData { get; set; }
 
+    private IEnumerable<House> houseData;
+
+    [Inject]
+    private ApiService ApiService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (listData.whichList == "AllHouses")
+        {
+            houseData = await ApiService.GetAllHouses();
+        }
+        else if (listData.whichList == "BrokersHouses")
+        {
+            houseData = await ApiService.GetHousesByBrokerEmail(listData.email);
+        }
+    }
 }

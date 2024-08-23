@@ -36,24 +36,19 @@
 
         @if (loggedIn == true)
         {
-            <h3>Mäklarmeny</h3>
+            <h3 style="color:lightblue">Mäklarmeny</h3>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="newhouse">
                     <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Lägg till hus
                 </NavLink>
             </div>
-@*             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="edithouse/3">
-                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Redigera hus
-                </NavLink>
-            </div> *@
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="editBroker">
                     <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Redigera min info
                 </NavLink>
             </div>
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="getBrokerByEmail">
+                <NavLink class="nav-link" href="getBrokersHousesByEmail">
                     <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Visa mina objekt
                 </NavLink>
             </div>

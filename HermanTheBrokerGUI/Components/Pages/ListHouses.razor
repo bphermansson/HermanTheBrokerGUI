@@ -4,46 +4,17 @@
 @using HermanTheBrokerGUI.Models
 
 <h3>Alla objekt</h3>
+<HouseList listData="ld"></HouseList>
 
-@if (houseData != null)
-{
-    <ul>
-        @foreach (var item in houseData)
-        {
-            @if (item.Error == true)
-            {
-                @item.Status
-            }
-            else
-            {
-                <li>Hus nummer @item.HouseId</li>
-                <li>@item.Street</li>
-                <a class="nav-link" href="/housedetails/@item.HouseId">
-                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Detaljer
-                </a>
-                <a class="nav-link" href="edithouse/@item.HouseId">
-                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Redigera hus
-                </a>
-                <a class="nav-link" href="deletehouse/@item.HouseId">
-                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Ta bort hus
-                </a>
-                <hr />
-            }
-        }
-    </ul>
-}
-else
-{
-    <p>Loading data...</p>
-}
 @code {
     private IEnumerable<House> houseData;
+    private listData ld = new();
 
     [Inject]
     private ApiService ApiService { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        houseData = await ApiService.GetAllHouses();
+        ld.whichList = "AllHouses";
     }
 }
