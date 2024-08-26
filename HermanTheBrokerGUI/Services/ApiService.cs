@@ -177,7 +177,7 @@ namespace HermanTheBrokerGUI.Services
         public async Task<bool> Edithouse(House house)
         {
             HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseAddress + "api/House/EditHouse", house);
-            //var lc = await addResponse.Content.ReadFromJsonAsync<JsonElement>();    // Can be used to check for errors
+            //var lc = await response.Content.ReadFromJsonAsync<JsonElement>();    // Can be used to check for errors
             if (response.IsSuccessStatusCode)
             {
                 return true;

@@ -9,11 +9,7 @@
 <EditForm Model="@FormValues" OnValidSubmit="SubmitEdit" FormName="edithouse">
     <div>
         <label>
-            Id:
-            <InputText @bind-Value="FormValues.Id" />
-        </label>
-        <label>
-            Hus Id:
+           Hus Id:
             <InputNumber @bind-Value="FormValues.HouseId" />
         </label>
         <label>
@@ -33,6 +29,10 @@
             <InputNumber @bind-Value="FormValues!.BuildYear" />
         </label>
         <label>
+            Kategori:
+            <InputNumber @bind-Value="FormValues!.Category" />
+        </label>
+        <label>
             Antal våningar:
             <InputNumber @bind-Value="FormValues!.NoOfFloors" />
         </label>
@@ -40,11 +40,11 @@
             Antal rum:
             <InputNumber @bind-Value="FormValues!.NoOfRooms" />
         </label>
-        <label>
+             <label>
             Mäklar id:
             <InputText @bind-Value="FormValues.BrokerId" />
         </label>
-    </div>
+    </div> 
     <div>
         <button>Spara</button>
     </div>
@@ -73,7 +73,6 @@
         if (FormValues.Area == 0)
         {
             NewHouseValues = await ApiService.GetById(Int32.Parse(Id));
-            FormValues.Id = NewHouseValues.Id;
             FormValues.HouseId = NewHouseValues.HouseId;
             FormValues.Street = NewHouseValues.Street;
             FormValues.City = NewHouseValues.City;
@@ -86,6 +85,7 @@
             FormValues.Status = NewHouseValues.Status;
             FormValues.BrokerId = NewHouseValues.BrokerId;
             FormValues.Broker = NewHouseValues.Broker;
+            FormValues.Broker.Email = NewHouseValues.Broker.Email;
         }
     }
 
@@ -94,7 +94,6 @@
         submitted = true;
         // Get values again, otherwise Broker gets lost in space...
         NewHouseValues = await ApiService.GetById(Int32.Parse(Id));
-        NewHouseValues.Id = FormValues.Id;
         NewHouseValues.HouseId = FormValues.HouseId;
         NewHouseValues.Street = FormValues.Street;
         NewHouseValues.City = FormValues.City;
