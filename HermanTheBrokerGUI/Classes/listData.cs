@@ -3,6 +3,6 @@
     public class listData
     {
         public string whichList { get; set; }
-        public string email { get; set; }
+        public string brokerEmail { get; set; }
     }
 }

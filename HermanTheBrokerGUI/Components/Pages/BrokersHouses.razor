@@ -16,10 +16,7 @@
     protected override async Task OnInitializedAsync()
     {
         var email = Config.CurrentEmail;
-        //houseData = await ApiService.GetHousesByBrokerEmail(email);
-        ld.email = email;
+        ld.brokerEmail = email;
         ld.whichList = "BrokersHouses";
     }
-
-
 }

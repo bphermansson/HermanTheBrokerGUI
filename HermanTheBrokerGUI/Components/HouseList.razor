@@ -1,7 +1,6 @@
 ﻿@using HermanTheBrokerGUI.Classes
 @using HermanTheBrokerGUI.Models
 @using HermanTheBrokerGUI.Services
-<h3>HouseList</h3>
 @if (houseData != null)
 {
     <ul>
@@ -51,7 +50,7 @@ else
         }
         else if (listData.whichList == "BrokersHouses")
         {
-            houseData = await ApiService.GetHousesByBrokerEmail(listData.email);
+            houseData = await ApiService.GetHousesByBrokerEmail(listData.brokerEmail);
         }
     }
 }

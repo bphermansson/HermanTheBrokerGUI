@@ -1,5 +1,6 @@
 ﻿@page "/editbroker"
 @using HermanTheBrokerAPI.Areas.Identity.Data
+@using HermanTheBrokerAPI.Models
 @using HermanTheBrokerGUI.Classes
 @using HermanTheBrokerGUI.Models
 @using HermanTheBrokerGUI.Services
@@ -12,13 +13,16 @@
     <div>
         <label>
             Id:
-            <InputText @bind-Value="FormValues.Id" />
+            <InputText @bind-Value="FormValues.Id" /> 
         </label>
-
         <label>
-            PhoneNumber:
-            <InputText @bind-Value="FormValues.PhoneNumber" />
+            Id:
+            <InputText @bind-Value="FormValues.Name" />
         </label>
+          <label>
+            PhoneNumber:
+            <InputNumber @bind-Value="FormValues.PhoneNumber" />
+        </label> 
         <label>
             Email:
             <InputText @bind-Value="FormValues.Email" />
@@ -28,9 +32,18 @@
             <InputText @bind-Value="FormValues.NormalizedUserName" />
         </label>
         <label>
+            :
+            <InputSelect @bind-Value="FormValues.Houses" />
+
+                @foreach (var v in hs)
+                {
+                    <option value="@v">@v</option>
+                }
+        </label>
+        <label>
             UserName:
             <InputText @bind-Value="FormValues.UserName" />
-        </label>
+        </label> 
         <label>
             LockoutEnd:
             <InputDate @bind-Value="FormValues!.LockoutEnd" />
@@ -60,24 +73,28 @@
 
 @code {
     [SupplyParameterFromForm]
-    HermanTheBrokerAPIUser FormValues { get; set; } = new();
+    Broker FormValues { get; set; } = new();
+    List<House> hs { get; set; } = new();
 
     [Inject]
     private ApiService ApiService { get; set; }
 
     bool submitted = false;
-    IdentityUser NewValues { get; set; } = new();  //Values from db including concurrency token
+    Broker NewValues { get; set; } = new();  //Values from db including concurrency token
 
     protected override async Task OnInitializedAsync()
     {
+
         if (FormValues.Email == null)
         {
-            var email = Config.CurrentEmail;
-
-            NewValues = await ApiService.GetBrokerByEmail(email);
-
+            NewValues = await ApiService.GetBrokerByEmail(Config.CurrentEmail);
             FormValues.Id = NewValues.Id;
+            FormValues.Name = NewValues.Name;
             FormValues.PhoneNumber = NewValues.PhoneNumber;
+            foreach(var v in NewValues.Houses)
+            {
+                hs.Add(v);
+            }
             FormValues.ConcurrencyStamp = NewValues.ConcurrencyStamp;
             FormValues.SecurityStamp = NewValues.SecurityStamp;
             FormValues.UserName = NewValues.UserName;
@@ -97,8 +114,13 @@
     private async Task SubmitEdit()
     {
         submitted = true;
+        NewValues = await ApiService.GetBrokerByEmail(Config.CurrentEmail);
+
         NewValues.Id = FormValues.Id;
+        NewValues.Name = FormValues.Name;
         NewValues.PhoneNumber = FormValues.PhoneNumber;
+        //NewValues.Houses = FormValues.Houses;
+        NewValues.Houses = hs;
         NewValues.UserName = FormValues.UserName;
         NewValues.NormalizedUserName = FormValues.NormalizedUserName;
         NewValues.Email = FormValues.Email;
