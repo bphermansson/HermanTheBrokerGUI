@@ -1,8 +1,6 @@
 ﻿@page "/edithouse/{id}"
-@using HermanTheBrokerAPI.Models
 @using HermanTheBrokerGUI.Models
 @using HermanTheBrokerGUI.Services
-@using HermanTheBrokerAPI.Classes
 
 <h3>Redigera hus</h3>
 
@@ -30,7 +28,12 @@
         </label>
         <label>
             Kategori:
-            <InputNumber @bind-Value="FormValues!.Category" />
+            <InputSelect @bind-Value="CategoryString" >
+                <option value="@Category.Bostadsrättslägenhet">@Category.Bostadsrättslägenhet</option>
+                <option value="@Category.Bostadsrättsradhus">@Category.Bostadsrättsradhus</option>
+                <option value="@Category.Villa">@Category.Villa</option>
+                <option value="@Category.Fritidshus">@Category.Fritidshus</option>
+            </InputSelect>
         </label>
         <label>
             Antal våningar:
@@ -40,7 +43,7 @@
             Antal rum:
             <InputNumber @bind-Value="FormValues!.NoOfRooms" />
         </label>
-             <label>
+        <label>
             Mäklar id:
             <InputText @bind-Value="FormValues.BrokerId" />
         </label>
@@ -61,6 +64,7 @@
 
     [SupplyParameterFromForm]
     House FormValues { get; set; } = new();
+    public Category? CategoryString { get; set; }
 
     [Inject]
     private ApiService ApiService { get; set; }
@@ -80,7 +84,7 @@
             FormValues.BuildYear = NewHouseValues.BuildYear;
             FormValues.NoOfFloors = NewHouseValues.NoOfFloors;
             FormValues.NoOfRooms = NewHouseValues.NoOfRooms;
-            FormValues.Category = NewHouseValues.Category;
+            CategoryString = NewHouseValues.Category;
             FormValues.Error = NewHouseValues.Error;
             FormValues.Status = NewHouseValues.Status;
             FormValues.BrokerId = NewHouseValues.BrokerId;
@@ -101,7 +105,7 @@
         NewHouseValues.BuildYear = FormValues.BuildYear;
         NewHouseValues.NoOfFloors = FormValues.NoOfFloors;
         NewHouseValues.NoOfRooms = FormValues.NoOfRooms;
-        NewHouseValues.Category = FormValues.Category;
+        NewHouseValues.Category = CategoryString;
         NewHouseValues.BrokerId = FormValues.BrokerId;
         var res = await ApiService.Edithouse(NewHouseValues);
     }

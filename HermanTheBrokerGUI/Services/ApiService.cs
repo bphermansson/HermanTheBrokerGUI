@@ -1,6 +1,4 @@
 ﻿using HermanTheBrokerAPI.Areas.Identity.Data;
-using HermanTheBrokerAPI.Classes;
-using HermanTheBrokerAPI.Models;
 using HermanTheBrokerGUI.Classes;
 using HermanTheBrokerGUI.Models;
 using Microsoft.AspNetCore.Identity;
@@ -18,7 +16,6 @@ namespace HermanTheBrokerGUI.Services
         public ApiService(HttpClient httpClient)
         {
             _httpClient = httpClient;
-
         }
 
         public async Task<House> GetById(int houseId)
@@ -28,8 +25,6 @@ namespace HermanTheBrokerGUI.Services
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                //IEnumerable<House> house = await response.Content.ReadAsStringAsync();
-
                 return JsonSerializer.Deserialize<House>(content);
 
             }
@@ -37,7 +32,7 @@ namespace HermanTheBrokerGUI.Services
         }
         public async Task<IEnumerable<House>> GetAllHouses()
         {
-            //_httpClient.DefaultRequestHeaders.Authorization = new("Bearer", Config.AuthToken);
+           
             var response = await _httpClient.GetAsync(BaseAddress + "api/House/Houses");
 
             if (response.IsSuccessStatusCode)
@@ -166,9 +161,10 @@ namespace HermanTheBrokerGUI.Services
         }
         public async Task<bool> Newhouse(House house)
         {
-            HttpResponseMessage addResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "api/House/NewHouse", house);
-            //var lc = await addResponse.Content.ReadFromJsonAsync<JsonElement>();    // Can be used to check for errors
-            if (addResponse.IsSuccessStatusCode)
+            _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", Config.AuthToken);
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseAddress + "api/House/NewHouse", house);
+            var lc = await response.Content.ReadFromJsonAsync<JsonElement>();    // Can be used to check for errors
+            if (response.IsSuccessStatusCode)
             {
                 return true;
             }
@@ -176,6 +172,7 @@ namespace HermanTheBrokerGUI.Services
         }
         public async Task<bool> Edithouse(House house)
         {
+            _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", Config.AuthToken);
             HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseAddress + "api/House/EditHouse", house);
             //var lc = await response.Content.ReadFromJsonAsync<JsonElement>();    // Can be used to check for errors
             if (response.IsSuccessStatusCode)
@@ -196,6 +193,7 @@ namespace HermanTheBrokerGUI.Services
         }
         public async Task<bool> Editbroker(Broker uid)
         {
+            _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", Config.AuthToken);
             HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseAddress + "api/Broker/EditBroker", uid);
             //var lc = await response.Content.ReadFromJsonAsync<JsonElement>();    // Can be used to check for errors
             if (response.IsSuccessStatusCode)
@@ -206,9 +204,25 @@ namespace HermanTheBrokerGUI.Services
         }
         public async Task<Broker> GetBrokerByEmail(string email)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync(BaseAddress + "api/Broker/" + email);
-            var responseContent = await response.Content.ReadFromJsonAsync<JsonElement>();    
-            return responseContent[0].Deserialize<Broker>();
+            _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", Config.AuthToken);
+            HttpResponseMessage response = await _httpClient.GetAsync(BaseAddress + "api/Broker/GetBrokerByEmail?brokerEmail=" + email);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadFromJsonAsync<JsonElement>();
+
+                return responseContent[0].Deserialize<Broker>();
+            }
+            Broker error = new();
+            error.Email = "Error";
+            return error;
+            
         }
+        public async Task<List<Broker>> GetAllBrokers()
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync(BaseAddress + "api/Broker/GetAllBrokers");
+            var responseContent = await response.Content.ReadFromJsonAsync<JsonElement>();
+            return JsonSerializer.Deserialize<List<Broker>>(responseContent);
+        }
+
     }
 }

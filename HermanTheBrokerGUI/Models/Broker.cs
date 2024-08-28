@@ -1,7 +1,7 @@
 ﻿using HermanTheBrokerGUI.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace HermanTheBrokerAPI.Models
+namespace HermanTheBrokerGUI.Models
 {
 	public class Broker : IdentityUser
 	{

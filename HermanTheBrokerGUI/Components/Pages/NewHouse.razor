@@ -31,30 +31,63 @@
         </label>
         <label>
         </label>
+        <label>
+            Mäklar id:
+            <InputText @bind-Value="Model!.BrokerId" />
+        </label>
+        <label>
+            Mäklare:
+            <InputSelect @bind-Value="@selectedString">
+                @if(Brokers != null)
+                {
+                    @foreach (var b in Brokers)
+                    {
+                        <option value="@b.Email">@b.Email</option>
+                    }
+                }
+                
+            </InputSelect>
+        </label>
     </div>
     <div>
         <button type="submit">Lägg till</button>
     </div>
 </EditForm>
 
-@if (submitted)
+@if (res && submitted)
 {
     <p>Hus tillagt.</p>
+}
+else if (!res && submitted)
+{
+    <p>Något gick fel.</p>
 }
 
 @code {
     [SupplyParameterFromForm]
     public House? Model { get; set; }
+    [SupplyParameterFromForm]
+    public string selectedString { get; set; }
+
+    List<Broker> Brokers { get; set; } = new();
 
     [Inject]
     private ApiService ApiService { get; set; }
 
     protected override void OnInitialized() => Model ??= new();
+    bool res;
     bool submitted = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Brokers = await ApiService.GetAllBrokers();
+    }
 
     private async Task Submit()
     {
         submitted = true;
-        var res = await ApiService.Newhouse(Model);
+        var curBroker = selectedString;
+        Model.Broker = await ApiService.GetBrokerByEmail(curBroker);
+        res = await ApiService.Newhouse(Model);
     }
 }

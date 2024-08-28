@@ -1,4 +1,4 @@
-﻿namespace HermanTheBrokerAPI.Classes
+﻿namespace HermanTheBrokerGUI.Classes
 {
     public class Searchobject
     {

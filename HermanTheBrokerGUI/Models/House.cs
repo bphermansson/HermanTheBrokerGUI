@@ -1,5 +1,4 @@
-﻿using HermanTheBrokerAPI.Models;
-
+﻿
 namespace HermanTheBrokerGUI.Models
 {
     public enum Category
