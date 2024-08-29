@@ -4,11 +4,25 @@
 @using HermanTheBrokerGUI.Services
 
 <h3>Mina objekt</h3>
+@if (brokerData.UserName != null)
+{
+    <p>@brokerData.UserName</p>
+}
+@if (brokerData.Name != null) 
+{
+    <p>@brokerData.Name</p>
+}
+@if (brokerData.Email != null)
+{
+    <p>@brokerData.Email</p>
+}
+
 <HouseList listData="ld"></HouseList>
 
 @code {
     private IEnumerable<House> houseData;
     private listData ld = new();
+    private Broker brokerData = new();
 
     [Inject]
     private ApiService ApiService { get; set; }
@@ -16,6 +30,8 @@
     protected override async Task OnInitializedAsync()
     {
         var email = Config.CurrentEmail;
+        // Special, we must wait for this, otherwise the page doesn't work.
+        brokerData = Task.Run(async () => await ApiService.GetBrokerByEmail(email)).Result;
         ld.brokerEmail = email;
         ld.whichList = "BrokersHouses";
     }

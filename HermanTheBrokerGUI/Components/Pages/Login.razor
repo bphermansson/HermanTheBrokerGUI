@@ -4,33 +4,49 @@
 @using HermanTheBrokerGUI.Models
 
 <h3>Logga in</h3>
+<EditForm Model="@Loginobject" FormName="login" OnSubmit="Submit">
+    <h3>Logga in</h3>
+    <hr />
+    <div class="form-group row">
+        <label for="email" class="col-sm-2 col-form-label">
+            Email
+        </label>
+        <div class="col-sm-2">
+            <InputText id="email" class="form-control" placeholder="Namn"
+                       @bind-Value="Loginobject.Email" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="password" class="col-sm-2 col-form-label">
+            Lösenord
+        </label>
+        <div class="col-sm-2">
+            <InputText id="password" class="form-control" placeholder="Lösenord"
+                       @bind-Value="Loginobject.Password" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="newAccount" class="col-sm-2 col-form-label">
+            Nytt konto?
+        </label>
+        <div class="col-sm-1">
+            <InputCheckbox id="newaccount" class="form-check-input"
+            @bind-Value="Loginobject.Register" />
 
-<form method="post" @onsubmit="SubmitLogin" @formname="login">
-    <AntiforgeryToken />
-     <div>
-        <label>
-            Name:
-             <InputText @bind-Value="Loginobject!.Email" />
-        </label>
-    </div> 
-    <div>
-        <label>
-            Password:
-             <InputText @bind-Value="Loginobject!.Password" />
-        </label>
+        </div>
     </div>
-    <div>
-        <label>Nytt konto?</label>
-        <InputCheckbox @bind-Value="Loginobject!.Register"></InputCheckbox>
+    <div class="form-group row">
+        <div class="col-sm-10">
+            <button type="submit">Logga in/Registrera</button>
+
+        </div>
     </div>
-    <div>
-        <button type="submit">Logga in/Registrera</button>
-    </div>
-</form>
+</EditForm>
 
 @loginResult
 @regResult
-@if(loginResult != null) {
+@if (loginResult != null && loginResult != "Fel användarnamn eller lösenord." || regResult == "Kontot registrerat.")
+{
     <div class="nav-item px-3">
         <NavLink class="nav-link" href="/">
             <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Gå vidare
@@ -48,7 +64,7 @@
 
     private string loginResult, regResult;
 
-    private async Task SubmitLogin()
+    private async Task Submit()
     {
         var lin = new loginObject()
         {

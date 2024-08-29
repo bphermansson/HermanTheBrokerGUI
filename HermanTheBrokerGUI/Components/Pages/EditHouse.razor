@@ -5,27 +5,37 @@
 <h3>Redigera hus</h3>
 
 <EditForm Model="@FormValues" OnValidSubmit="SubmitEdit" FormName="edithouse">
-    <div>
+    <div class="col-sm-2">
         <label>
            Hus Id:
             <InputNumber @bind-Value="FormValues.HouseId" />
         </label>
+    </div>
+    <div class="col-sm-2">
         <label>
             Gata:
             <InputText @bind-Value="FormValues.Street" />
         </label>
+        </div>
+    <div class="col-sm-2">
         <label>
             Stad: 
             <InputText @bind-Value="FormValues!.City" />
         </label>
+    </div>
+    <div class="col-sm-2">
         <label>
             Area:
             <InputNumber @bind-Value="FormValues!.Area" />
         </label>
+    </div>
+    <div class="col-sm-2">
         <label>
             Byggår:
             <InputNumber @bind-Value="FormValues!.BuildYear" />
         </label>
+    </div>
+    <div class="col-sm-2">
         <label>
             Kategori:
             <InputSelect @bind-Value="CategoryString" >
@@ -35,20 +45,26 @@
                 <option value="@Category.Fritidshus">@Category.Fritidshus</option>
             </InputSelect>
         </label>
+    </div>
+    <div class="col-sm-2">
         <label>
             Antal våningar:
             <InputNumber @bind-Value="FormValues!.NoOfFloors" />
         </label>
+    </div>
+    <div class="col-sm-2">
         <label>
             Antal rum:
             <InputNumber @bind-Value="FormValues!.NoOfRooms" />
         </label>
+    </div>
+    <div class="col-sm-2">
         <label>
             Mäklar id:
             <InputText @bind-Value="FormValues.BrokerId" />
         </label>
-    </div> 
-    <div>
+    </div>
+    <div class="col-sm-2">
         <button>Spara</button>
     </div>
 </EditForm>

@@ -31,10 +31,10 @@
         </label>
         <label>
         </label>
-        <label>
+@*         <label>
             Mäklar id:
             <InputText @bind-Value="Model!.BrokerId" />
-        </label>
+        </label> *@
         <label>
             Mäklare:
             <InputSelect @bind-Value="@selectedString">
@@ -68,6 +68,8 @@ else if (!res && submitted)
     public House? Model { get; set; }
     [SupplyParameterFromForm]
     public string selectedString { get; set; }
+    [SupplyParameterFromForm]
+    public string selectedBrokerId { get; set; }
 
     List<Broker> Brokers { get; set; } = new();
 
@@ -86,8 +88,11 @@ else if (!res && submitted)
     private async Task Submit()
     {
         submitted = true;
-        var curBroker = selectedString;
-        Model.Broker = await ApiService.GetBrokerByEmail(curBroker);
+        //var curBroker = selectedString;
+        //Model.Broker = await ApiService.GetBrokerByEmail(curBroker);
+        //var curBroker = ;
+        Model.Broker = await ApiService.GetBrokerByEmail(selectedString);
+        Model.BrokerId = Model.Broker.Id;
         res = await ApiService.Newhouse(Model);
     }
 }

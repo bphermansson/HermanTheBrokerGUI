@@ -10,57 +10,47 @@
  @if (NewValues.Email != "Error")
  {
     <EditForm Model="@FormValues" OnSubmit="SubmitEdit" FormName="edithouse">
-        <div>
+        <div class="col-sm-2">
             <label>
                 Id:
                 <InputText @bind-Value="FormValues.Id" /> 
             </label>
+        </div>
+        <div class="col-sm-2">
             <label>
-                Name:
-                <InputText @bind-Value="FormValues.Name" />
-            </label>
-              <label>
-                PhoneNumber:
-                <InputNumber @bind-Value="FormValues.PhoneNumber" />
-            </label> 
-            <label>
-                Email:
+                Epost:
                 <InputText @bind-Value="FormValues.Email" />
             </label>
+        </div>
+        <div class="col-sm-2">
             <label>
-                NormalizedUserName:
-                <InputText @bind-Value="FormValues.NormalizedUserName" />
+                Namn:
+                <InputText @bind-Value="FormValues.Name" />
             </label>
+        </div>
+        <div class="col-sm-3">
             <label>
-                Houses:
+                Användarnamn:
+                <InputText @bind-Value="FormValues.UserName" />
+            </label>
+        </div>
+        <div class="col-sm-3">
+            <label>
+                Telefonnummer:
+                <InputNumber @bind-Value="FormValues.PhoneNumber" />
+            </label>
+        </div>
+        <div class="col-sm-2">
+            <label>
+                Hus:
                 <InputSelect @bind-Value="FormValues.Houses" />
                     @foreach (var v in hs)
                     {
                         <option value="@v">@v</option>
                     }
             </label>
-            <label>
-                UserName:
-                <InputText @bind-Value="FormValues.UserName" />
-            </label> 
-            <label>
-                LockoutEnd:
-                <InputDate @bind-Value="FormValues!.LockoutEnd" />
-            </label>
-            <label>
-                NormalizedEmail:
-                <InputText @bind-Value="FormValues!.NormalizedEmail" />
-            </label>
-            <label>
-                NormalizedUserName:
-                <InputText @bind-Value="FormValues!.NormalizedUserName" />
-            </label>
-            <label>
-                PasswordHash:
-                <InputText @bind-Value="FormValues!.PasswordHash" />
-            </label>
         </div>
-        <div>
+        <div class="col-sm-2">
             <button>Spara</button>
         </div>
     </EditForm>

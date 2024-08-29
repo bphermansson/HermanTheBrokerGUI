@@ -13,16 +13,13 @@
             else
             {
                 <li>Hus nummer @item.HouseId</li>
-                <li>@item.Street</li>
-                <a class="nav-link" href="/housedetails/@item.HouseId">
-                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Detaljer
-                </a>
-                <a class="nav-link" href="edithouse/@item.HouseId">
-                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Redigera hus
-                </a>
-                <a class="nav-link" href="deletehouse/@item.HouseId">
-                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Ta bort hus
-                </a>
+                <li>@item.Street, @item.City</li>
+                <p><a href="/housedetails/@item.HouseId" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Detaljer</a></p>
+                @if (loggedIn == true)
+                {
+                    <p><a href="edithouse/@item.HouseId" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Redigera hus</a></p>
+                    <p><a href="deletehouse/@item.HouseId" class="link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Ta bort hus</a></p>
+                }
                 <hr />
             }
         }
@@ -38,12 +35,15 @@ else
     public listData listData { get; set; }
 
     private IEnumerable<House> houseData;
+    private bool loggedIn;
 
     [Inject]
     private ApiService ApiService { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        loggedIn = ApiService.LoginCheck();
+
         if (listData.whichList == "AllHouses")
         {
             houseData = await ApiService.GetAllHouses();
