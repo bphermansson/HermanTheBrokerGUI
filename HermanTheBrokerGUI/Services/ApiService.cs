@@ -1,8 +1,5 @@
-﻿using HermanTheBrokerAPI.Areas.Identity.Data;
-using HermanTheBrokerGUI.Classes;
+﻿using HermanTheBrokerGUI.Classes;
 using HermanTheBrokerGUI.Models;
-using Microsoft.AspNetCore.Identity;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 
@@ -77,10 +74,8 @@ namespace HermanTheBrokerGUI.Services
             }
         }
 
-        public async Task<string> Login(loginObject lin)
+        public async Task<string> Login(LoginObject lin)
         {
-            //email = "a@a.com";
-            //password = "123qweE_";
             HttpResponseMessage loginResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "identity/login", new { lin.Email, lin.Password });
 
             if (loginResponse.IsSuccessStatusCode)
@@ -96,27 +91,26 @@ namespace HermanTheBrokerGUI.Services
                 return "Fel användarnamn eller lösenord.";
             }
         }
-        public async Task<string> Register(loginObject lin)
+        public async Task<string> Register(LoginObject lin)
         {
-            HttpResponseMessage regResponse = await _httpClient.PostAsJsonAsync(BaseAddress + "identity/register", new { lin.Email, lin.Password });
-
-
-            if (regResponse.IsSuccessStatusCode)
-            {
-                return "Kontot registrerat.";
-            }
-            else
+            using HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseAddress + "identity/register", new { lin.Email, lin.Password });
             {
                 // Get & decode response.
-                using var contentStream = await regResponse.Content.ReadAsStreamAsync();
-                var root = await JsonSerializer.DeserializeAsync<ResponseRoot>(contentStream);
-                if (root.errors != null) 
+                try
                 {
-                    return "Den epostadressen är upptagen.";
+                    response.EnsureSuccessStatusCode();
+                    return "Kontot registrerat.";
                 }
-                if(regResponse.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+                catch (HttpRequestException e)
                 {
-                    return "Serverfel.";
+                    // TODO: Better error reporting, what went wrong?
+                    //using var contentStream = await response.Content.ReadAsStreamAsync();
+                    //var root = await JsonSerializer.DeserializeAsync<Root>(contentStream);
+                    //var err = root.errors;
+                    //var s = err.GetType();
+                    //System.Reflection.PropertyInfo pi = err.GetType().GetProperty("name"); // get the property info of "name"
+                    //string name = (string)(pi.GetValue(err, null));
+                    return "Något gick fel.";
                 }
             }
             return "Okänt fel.";

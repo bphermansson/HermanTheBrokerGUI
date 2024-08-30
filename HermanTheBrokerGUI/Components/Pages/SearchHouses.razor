@@ -77,9 +77,13 @@
             <li><a href="/housedetails/@item.HouseId">Detaljer</a></li>
             <hr />
         }
+        @if(houseData.Count() == 0)
+        {
+            <p>Inga resultat</p>
+        }
     </ul>
 }
-else
+else if (submitted)
 {
     <p>Loading data...</p>
 }
@@ -88,12 +92,14 @@ else
     public Searchobject? Searchobject { get; set; }
     protected override void OnInitialized() => Searchobject ??= new();
     private IEnumerable<House> houseData;
+    bool submitted = false;
 
     [Inject]
     private ApiService ApiService { get; set; }
 
     private async Task SubmitArea()
     {
+        submitted = true;
         var srch = new Searchobject();
         if(srch.Minsize==null)
         {
@@ -109,6 +115,7 @@ else
     }
     private async Task SubmitRooms()
     {
+        submitted = true;
         var srch = new Searchobject();
         srch.Noofrooms = Searchobject?.Noofrooms;
         if (srch.Noofrooms == null)
@@ -122,6 +129,7 @@ else
     }
     private async Task SubmitCity()
     {
+        submitted = true;
         var srch = new Searchobject();
         srch.City = Searchobject?.City;
         if (srch.City == null)

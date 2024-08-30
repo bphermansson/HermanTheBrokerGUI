@@ -13,7 +13,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient("MyApi", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7015/");
-      });
+});
 builder.Services.AddTransient<ApiService>();
 
 var app = builder.Build();

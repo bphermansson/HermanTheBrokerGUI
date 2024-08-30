@@ -3,8 +3,7 @@
 @using HermanTheBrokerGUI.Services
 @using HermanTheBrokerGUI.Models
 
-<h3>Logga in</h3>
-<EditForm Model="@Loginobject" FormName="login" OnSubmit="Submit">
+<EditForm Model="@loginObject" FormName="login" OnSubmit="Submit">
     <h3>Logga in</h3>
     <hr />
     <div class="form-group row">
@@ -13,7 +12,7 @@
         </label>
         <div class="col-sm-2">
             <InputText id="email" class="form-control" placeholder="Namn"
-                       @bind-Value="Loginobject.Email" />
+               @bind-Value="loginObject.Email" />
         </div>
     </div>
     <div class="form-group row">
@@ -22,7 +21,7 @@
         </label>
         <div class="col-sm-2">
             <InputText id="password" class="form-control" placeholder="Lösenord"
-                       @bind-Value="Loginobject.Password" />
+               @bind-Value="loginObject.Password" />
         </div>
     </div>
     <div class="form-group row">
@@ -31,14 +30,12 @@
         </label>
         <div class="col-sm-1">
             <InputCheckbox id="newaccount" class="form-check-input"
-            @bind-Value="Loginobject.Register" />
-
+               @bind-Value="loginObject.Register" />
         </div>
     </div>
     <div class="form-group row">
         <div class="col-sm-10">
             <button type="submit">Logga in/Registrera</button>
-
         </div>
     </div>
 </EditForm>
@@ -56,8 +53,8 @@
 
 @code {
     [SupplyParameterFromForm]
-    public loginObject? Loginobject { get; set; }
-    protected override void OnInitialized() => Loginobject ??= new();
+    public LoginObject? loginObject { get; set; }
+    protected override void OnInitialized() => loginObject ??= new();
 
     [Inject]
     private ApiService ApiService { get; set; }
@@ -66,15 +63,15 @@
 
     private async Task Submit()
     {
-        var lin = new loginObject()
+        var lin = new LoginObject()
         {
             Email = string.Empty,
             Password = string.Empty,
             Register = false
         };
-        lin.Email = Loginobject?.Email;
-        lin.Password = Loginobject?.Password;
-        lin.Register = Loginobject.Register;
+        lin.Email = loginObject?.Email;
+        lin.Password = loginObject?.Password;
+        lin.Register = loginObject.Register;
         if(lin.Register == false)
         {
             loginResult = await ApiService.Login(lin);

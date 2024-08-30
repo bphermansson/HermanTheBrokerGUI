@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Identity;
 namespace HermanTheBrokerAPI.Areas.Identity.Data;
 
 // Add profile data for application users by adding properties to the HermanTheBrokerAPIUser class
-public class HermanTheBrokerAPIUser : IdentityUser
-{
-    public ICollection<House> Houses { get; set; }
+//public class HermanTheBrokerAPIUser : IdentityUser
+//{
+//    public ICollection<House> Houses { get; set; }
 
-}
+//}
 

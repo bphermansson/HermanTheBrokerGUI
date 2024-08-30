@@ -7,7 +7,6 @@ namespace HermanTheBrokerGUI.Services
         Task<House> GetHouseAsync(int id);
         public Task<IEnumerable<House>> GetAllHouses();
         public Task<IEnumerable<Broker>> GetAllBrokers();
-
         Task<IEnumerable<House>> SearchHouses<House>(Searchobject searchobject);
     }
 }

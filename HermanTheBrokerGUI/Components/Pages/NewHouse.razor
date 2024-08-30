@@ -4,37 +4,47 @@
 
 <h3>Lägg till hus</h3>
 <EditForm Model="Model" OnSubmit="Submit" FormName="newhouse">
-    <div>
+    <div class="col-sm-2">
         <label>
             Gata:
             <InputText @bind-Value="Model!.Street" />
         </label>
+    </div>
+    <div class="col-sm-2">
         <label>
             Stad: 
             <InputText @bind-Value="Model!.City" />
         </label>
+    </div>
+    <div class="col-sm-2">
         <label>
             Area:
             <InputNumber @bind-Value="Model!.Area" />
         </label>
+    </div>
+    <div class="col-sm-2">
         <label>
             Byggår:
             <InputNumber @bind-Value="Model!.BuildYear" />
         </label>
+    </div>
+    <div class="col-sm-2">
         <label>
             Antal våningar:
             <InputNumber @bind-Value="Model!.NoOfFloors" />
         </label>
+    </div>
+    <div class="col-sm-2">
         <label>
             Antal rum:
             <InputNumber @bind-Value="Model!.NoOfRooms" />
         </label>
-        <label>
-        </label>
+    </div>
 @*         <label>
             Mäklar id:
             <InputText @bind-Value="Model!.BrokerId" />
         </label> *@
+    <div class="col-sm-2">
         <label>
             Mäklare:
             <InputSelect @bind-Value="@selectedString">
@@ -45,7 +55,6 @@
                         <option value="@b.Email">@b.Email</option>
                     }
                 }
-                
             </InputSelect>
         </label>
     </div>
@@ -88,9 +97,6 @@ else if (!res && submitted)
     private async Task Submit()
     {
         submitted = true;
-        //var curBroker = selectedString;
-        //Model.Broker = await ApiService.GetBrokerByEmail(curBroker);
-        //var curBroker = ;
         Model.Broker = await ApiService.GetBrokerByEmail(selectedString);
         Model.BrokerId = Model.Broker.Id;
         res = await ApiService.Newhouse(Model);
