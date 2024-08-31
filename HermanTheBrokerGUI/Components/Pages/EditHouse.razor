@@ -69,6 +69,8 @@
     </div>
 </EditForm>
 
+<PicUpload houseId=@Id></PicUpload>
+
 @if (submitted)
 {
     <p>Ändringar sparade.</p>
@@ -87,6 +89,7 @@
 
     bool submitted = false;
     House NewHouseValues { get; set; } = new();  //Values from db including concurrency token
+    int houseId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -105,7 +108,9 @@
             FormValues.Status = NewHouseValues.Status;
             FormValues.BrokerId = NewHouseValues.BrokerId;
             FormValues.Broker = NewHouseValues.Broker;
-            FormValues.Broker.Email = NewHouseValues.Broker.Email;
+           // FormValues.Broker.Email = NewHouseValues.Broker.Email;
+
+            houseId = NewHouseValues.HouseId;
         }
     }
 

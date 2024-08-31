@@ -1,0 +1,95 @@
+﻿@rendermode InteractiveServer
+@page "/picupload/{houseId}"
+@using System 
+@using System.IO
+@using Microsoft.AspNetCore.Hosting
+@inject IWebHostEnvironment Environment
+
+@if (fileCount <= maxAllowedFiles)
+{
+    <p>
+        <label>
+            Ladda upp bilder på huset:
+            <InputFile OnChange="LoadFiles" multiple />
+        </label>
+    <p>Det finns @fileCount bilder på huset.</p>
+    </p>
+}
+else
+{
+    <p>Max antal bilder uppnått.</p>
+}
+
+@if(isLoading)
+{
+    <p> Laddar upp...</p>
+}
+else
+{
+    @uploadResult
+    <ul>
+        @foreach(var file in loadedFiles)
+        {
+            <li>
+                <ul>
+                    <li> Namn: @file.Name </li>
+                    <li> Ändrad: @file.LastModified.ToString() </li>
+                    <li> Storlek(bytes): @file.Size </li>
+                    <li> Filtyp: @file.ContentType </li>
+                </ul>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private List<IBrowserFile> loadedFiles = new();
+    private long maxFileSize = 1024 * 1000;
+    private int maxAllowedFiles = 40;
+    private int fileCount;
+    private bool isLoading;
+    private string uploadResult;
+    [Parameter]
+    public string houseId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var path = Path.Combine(Environment.ContentRootPath,
+            Environment.EnvironmentName, "Uploads", houseId);
+        System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(path);
+        fileCount = dir.GetFiles().Length;
+    }
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        isLoading = true;
+        loadedFiles.Clear();
+
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            try
+            {
+                var fileName = file.Name;
+                // var path = Path.Combine(Environment.ContentRootPath,
+                //     Environment.EnvironmentName, "Uploads", houseId );
+                var path = Path.Combine("Pictures", "Uploads", houseId );
+                var wholePath = Path.Combine(path, fileName);
+                
+                bool exists = System.IO.Directory.Exists(path);
+                if (!exists)
+                    System.IO.Directory.CreateDirectory(path);
+
+                await using FileStream fs = new(wholePath, FileMode.Create);
+                await file.OpenReadStream(maxFileSize).CopyToAsync(fs);
+
+                loadedFiles.Add(file);
+                uploadResult = $"Fil sparad: {fileName}";
+        }
+        catch (Exception ex)
+        {
+                uploadResult = $"Fil: {file.Name} Fel: {ex.Message.ToString()}";
+        }
+    }
+
+    isLoading = false;
+}
+}
