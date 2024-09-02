@@ -6,22 +6,15 @@
     <ul>
         @foreach (var item in houseData)
         {
-            @if (item.Error == true)
+            <li>Hus nummer @item.HouseId</li>
+            <li>@item.PostalAddress, @item.City</li>
+            <p><a href="/housedetails/@item.HouseId" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Detaljer</a></p>
+            @if (loggedIn == true)
             {
-                @item.Status
+                <p><a href="edithouse/@item.HouseId" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Redigera hus</a></p>
+                <p><a href="deletehouse/@item.HouseId" class="link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Ta bort hus</a></p>
             }
-            else
-            {
-                <li>Hus nummer @item.HouseId</li>
-                <li>@item.Street, @item.City</li>
-                <p><a href="/housedetails/@item.HouseId" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Detaljer</a></p>
-                @if (loggedIn == true)
-                {
-                    <p><a href="edithouse/@item.HouseId" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Redigera hus</a></p>
-                    <p><a href="deletehouse/@item.HouseId" class="link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Ta bort hus</a></p>
-                }
-                <hr />
-            }
+            <hr />
         }
     </ul>
 }

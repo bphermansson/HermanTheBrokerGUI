@@ -7,38 +7,14 @@
 <EditForm Model="@FormValues" OnValidSubmit="SubmitEdit" FormName="edithouse">
     <div class="col-sm-2">
         <label>
-           Hus Id:
+            Hus Id:
             <InputNumber @bind-Value="FormValues.HouseId" />
         </label>
     </div>
     <div class="col-sm-2">
         <label>
-            Gata:
-            <InputText @bind-Value="FormValues.Street" />
-        </label>
-        </div>
-    <div class="col-sm-2">
-        <label>
-            Stad: 
-            <InputText @bind-Value="FormValues!.City" />
-        </label>
-    </div>
-    <div class="col-sm-2">
-        <label>
-            Area:
-            <InputNumber @bind-Value="FormValues!.Area" />
-        </label>
-    </div>
-    <div class="col-sm-2">
-        <label>
-            Byggår:
-            <InputNumber @bind-Value="FormValues!.BuildYear" />
-        </label>
-    </div>
-    <div class="col-sm-2">
-        <label>
             Kategori:
-            <InputSelect @bind-Value="CategoryString" >
+            <InputSelect @bind-Value="CategoryString">
                 <option value="@Category.Bostadsrättslägenhet">@Category.Bostadsrättslägenhet</option>
                 <option value="@Category.Bostadsrättsradhus">@Category.Bostadsrättsradhus</option>
                 <option value="@Category.Villa">@Category.Villa</option>
@@ -48,20 +24,74 @@
     </div>
     <div class="col-sm-2">
         <label>
-            Antal våningar:
-            <InputNumber @bind-Value="FormValues!.NoOfFloors" />
+            Gatuadress:
+            <InputText @bind-Value="FormValues.PostalAddress" />
+        </label>
+    </div>
+    <div class="col-sm-2">
+        <label>
+            Stad:
+            <InputText @bind-Value="FormValues!.City" />
+        </label>
+    </div>
+    <div class="col-sm-2">
+        <label>
+            Utgångspris:
+            <InputNumber @bind-Value="FormValues!.AskingPrice" />
+        </label>
+    </div>
+    <div class="col-sm-2">
+        <label>
+            Bostadsyta:
+            <InputNumber @bind-Value="FormValues!.LivingArea" />
+        </label>
+    </div>
+    <div class="col-sm-2">
+        <label>
+            Biyta:
+            <InputNumber @bind-Value="FormValues!.SecondaryArea" />
+        </label>
+    </div>
+    <div class="col-sm-2">
+        <label>
+            Tomtyta:
+            <InputNumber @bind-Value="FormValues!.GardenArea" />
+        </label>
+    </div>
+    <div class="col-sm-2">
+        <label>
+            Beskrivning:
+            <InputTextArea @bind-Value="FormValues.Description" />
         </label>
     </div>
     <div class="col-sm-2">
         <label>
             Antal rum:
-            <InputNumber @bind-Value="FormValues!.NoOfRooms" />
+            <InputNumber @bind-Value="FormValues.NoOfRooms" />
         </label>
     </div>
     <div class="col-sm-2">
         <label>
-            Mäklar id:
-            <InputText @bind-Value="FormValues.BrokerId" />
+            Månadsavgift:
+            <InputNumber @bind-Value="FormValues.MonthlyFee" />
+        </label>
+    </div>
+    <div class="col-sm-2">
+        <label>
+            Driftskostnad per år:
+            <InputNumber @bind-Value="FormValues.YearlyRunningCosts" />
+        </label>
+    </div>
+    <div class="col-sm-2">
+        <label>
+            Mäklare:
+            <InputText @bind-Value="FormValues!.BrokerId" />
+        </label>
+    </div>
+    <div class="col-sm-2">
+        <label>
+            Byggår:
+            <InputNumber @bind-Value="FormValues.BuildYear" />
         </label>
     </div>
     <div class="col-sm-2">
@@ -93,24 +123,30 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (FormValues.Area == 0)
+        if (FormValues.HouseId == 0)
         {
             NewHouseValues = await ApiService.GetById(Int32.Parse(Id));
             FormValues.HouseId = NewHouseValues.HouseId;
-            FormValues.Street = NewHouseValues.Street;
-            FormValues.City = NewHouseValues.City;
-            FormValues.Area = NewHouseValues.Area;
-            FormValues.BuildYear = NewHouseValues.BuildYear;
-            FormValues.NoOfFloors = NewHouseValues.NoOfFloors;
-            FormValues.NoOfRooms = NewHouseValues.NoOfRooms;
             CategoryString = NewHouseValues.Category;
+
+            FormValues.PostalAddress = NewHouseValues.PostalAddress;
+            FormValues.City = NewHouseValues.City;
+            FormValues.AskingPrice = NewHouseValues.AskingPrice;
+            FormValues.LivingArea = NewHouseValues.LivingArea;
+            FormValues.SecondaryArea = NewHouseValues.SecondaryArea;
+            FormValues.GardenArea = NewHouseValues.GardenArea;
+            FormValues.Description = NewHouseValues.Description;
+            FormValues.NoOfRooms = NewHouseValues.NoOfRooms;
+            FormValues.MonthlyFee = NewHouseValues.MonthlyFee;
+            FormValues.YearlyRunningCosts = NewHouseValues.YearlyRunningCosts;
+            FormValues.BuildYear = NewHouseValues.BuildYear;
             FormValues.Error = NewHouseValues.Error;
-            FormValues.Status = NewHouseValues.Status;
             FormValues.BrokerId = NewHouseValues.BrokerId;
             FormValues.Broker = NewHouseValues.Broker;
+
            // FormValues.Broker.Email = NewHouseValues.Broker.Email;
 
-            houseId = NewHouseValues.HouseId;
+            //houseId = NewHouseValues.HouseId;
         }
     }
 
@@ -120,14 +156,21 @@
         // Get values again, otherwise Broker gets lost in space...
         NewHouseValues = await ApiService.GetById(Int32.Parse(Id));
         NewHouseValues.HouseId = FormValues.HouseId;
-        NewHouseValues.Street = FormValues.Street;
+        NewHouseValues.Category = FormValues.Category.Value;
+        NewHouseValues.PostalAddress = FormValues.PostalAddress;
         NewHouseValues.City = FormValues.City;
-        NewHouseValues.Area = FormValues.Area;
-        NewHouseValues.BuildYear = FormValues.BuildYear;
-        NewHouseValues.NoOfFloors = FormValues.NoOfFloors;
+        NewHouseValues.AskingPrice = FormValues.AskingPrice;
+        NewHouseValues.LivingArea = FormValues.LivingArea;
+        NewHouseValues.SecondaryArea = FormValues.SecondaryArea;
+        NewHouseValues.GardenArea = FormValues.GardenArea;
+        NewHouseValues.Description = FormValues.Description;
         NewHouseValues.NoOfRooms = FormValues.NoOfRooms;
-        NewHouseValues.Category = CategoryString;
+        NewHouseValues.MonthlyFee = FormValues.MonthlyFee;
+        NewHouseValues.YearlyRunningCosts = FormValues.YearlyRunningCosts;
+        NewHouseValues.BuildYear = FormValues.BuildYear;
+        NewHouseValues.Error = FormValues.Error;
         NewHouseValues.BrokerId = FormValues.BrokerId;
+        NewHouseValues.Broker = FormValues.Broker;
         var res = await ApiService.Edithouse(NewHouseValues);
     }
 }
