@@ -5,7 +5,7 @@
 @using Microsoft.AspNetCore.Hosting
 @inject IWebHostEnvironment Environment
 
-@if(imageFiles != null){
+@if(imageFiles != null && imageFiles.Count() > 0){
     <div class="d-flex flex-column">
         @foreach(var img in imageFiles)
         {
@@ -14,6 +14,10 @@
             </a>
         }
     </div>
+}
+else
+{
+    <p>Inga bilder än.</p>
 }
 
 @code {
@@ -24,11 +28,19 @@
     protected override async Task OnInitializedAsync()
     {
         var path = Path.Combine("wwwroot/Pictures", "Uploads", houseId);
-        string[] files = Directory.GetFiles(path);
-        if(files != null)
+        try
         {
-            foreach (string file in files)
-                imageFiles.Add("Pictures/Uploads/" + houseId + "/" + Path.GetFileName(file));
+            string[] files = Directory.GetFiles(path);
+            if (files != null)
+            {
+                foreach (string file in files)
+                    imageFiles.Add("Pictures/Uploads/" + houseId + "/" + Path.GetFileName(file));
+            }
+        }
+        catch (Exception ex)
+        {
+            
         }
     }
+    
 }

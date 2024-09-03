@@ -1,4 +1,5 @@
-﻿@page "/editbroker"
+﻿@rendermode InteractiveServer
+@page "/editbroker"
 @using HermanTheBrokerAPI.Areas.Identity.Data
 @using HermanTheBrokerGUI.Classes
 @using HermanTheBrokerGUI.Models
@@ -40,21 +41,49 @@
                 <InputNumber @bind-Value="FormValues.PhoneNumber" />
             </label>
         </div>
-        <div class="col-sm-2">
-            <label>
-                Hus:
-                <InputSelect @bind-Value="FormValues.Houses" />
-                    @foreach (var v in hs)
-                    {
-                        <option value="@v">@v</option>
-                    }
-            </label>
-        </div>
+        @if(BrokersHouses != null)
+        {
+            <div class="col-sm-4">
+                <label>
+                    Mina hus:
+                    <ul>
+                        @foreach (var v in BrokersHouses)
+                        {
+                            <li>@v.HouseId, @v.PostalAddress, @v.City</li>
+                        }
+                    </ul>
+                </label>
+            </div>
+        }
+
         <div class="col-sm-2">
             <button>Spara</button>
         </div>
     </EditForm>
 }
+<div></div>
+<div class="col-sm-3">
+    @if(currentImage != null)
+    {
+        <p>
+            Bild:
+            <img src="@currentImage" alt="Mäklarbild" width="200em" />
+        </p>
+    }
+    else
+    {
+        <p>
+            Bild:
+            <img src="Pictures/placeholder.png" alt="Mäklarbild" width="200em" />
+        </p>
+    }
+    <p>
+        Byt bild:
+    </p>
+        <InputFile OnChange="LoadFile" />
+        @uploadResult
+</div>
+
 @if (submitted)
 {
     <p>Ändringar sparade.</p>
@@ -67,29 +96,29 @@
 @code {
     [SupplyParameterFromForm]
     Broker FormValues { get; set; } = new();
-    List<House> hs { get; set; } = new();
+
+    IEnumerable<House> BrokersHouses { get; set; }
 
     [Inject]
     private ApiService ApiService { get; set; }
 
     bool submitted = false;
     bool error = false;
-    Broker NewValues { get; set; } = new();  //Values from db including concurrency token
+    Broker NewValues { get; set; } = new();  
+    private string uploadResult;
+    private string currentImage;
 
     protected override async Task OnInitializedAsync()
     {
         if (FormValues.Email == null)
         {
             NewValues = await ApiService.GetBrokerByEmail(Config.CurrentEmail);
+            BrokersHouses = await ApiService.GetHousesByBrokerEmail(Config.CurrentEmail);
             if (NewValues.Email != "Error")
             {
                 FormValues.Id = NewValues.Id;
                 FormValues.Name = NewValues.Name;
                 FormValues.PhoneNumber = NewValues.PhoneNumber;
-                foreach (var v in NewValues.Houses)
-                {
-                    hs.Add(v);
-                }
                 FormValues.ConcurrencyStamp = NewValues.ConcurrencyStamp;
                 FormValues.SecurityStamp = NewValues.SecurityStamp;
                 FormValues.UserName = NewValues.UserName;
@@ -108,6 +137,17 @@
             {
                 error = true;
             }
+            var path = Path.Combine("wwwroot\\Pictures", "Uploads");
+            try
+            {
+                DirectoryInfo folder = new DirectoryInfo(path);
+                FileInfo[] files = folder.GetFiles(FormValues.Id + ".*");
+                currentImage = "Pictures/Uploads/" + files[0].Name.ToString();
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 
@@ -119,7 +159,6 @@
         NewValues.Id = FormValues.Id;
         NewValues.Name = FormValues.Name;
         NewValues.PhoneNumber = FormValues.PhoneNumber;
-        NewValues.Houses = hs;
         NewValues.UserName = FormValues.UserName;
         NewValues.NormalizedUserName = FormValues.NormalizedUserName;
         NewValues.Email = FormValues.Email;
@@ -131,5 +170,20 @@
         NewValues.LockoutEnd = FormValues.LockoutEnd;
         NewValues.LockoutEnabled = FormValues.LockoutEnabled;
         var res = await ApiService.Editbroker(NewValues);
+    }
+    private async Task LoadFile(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            string[] fileending = e.File.Name.Split('.');
+            var wholePath = Path.Combine("wwwroot\\Pictures\\Uploads", FormValues.Id);
+            await using FileStream fs = new(wholePath + "." + fileending[1], FileMode.Create);
+            await e.File.OpenReadStream(10000000).CopyToAsync(fs);
+            uploadResult = $"Fil sparad: {wholePath}";
+        }
+        catch (Exception ex)
+        {
+            uploadResult = $"Fil: {e.File.Name} Fel: {ex.Message.ToString()}";
+        }
     }
 }

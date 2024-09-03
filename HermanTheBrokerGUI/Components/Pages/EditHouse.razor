@@ -85,7 +85,12 @@
     <div class="col-sm-2">
         <label>
             Mäklare:
-            <InputText @bind-Value="FormValues!.BrokerId" />
+            <InputSelect @bind-Value="SelectedString">
+                @foreach (var br in Brokers)
+                {
+                    <option value="@br">@br</option>
+                }
+            </InputSelect>
         </label>
     </div>
     <div class="col-sm-2">
@@ -94,37 +99,48 @@
             <InputNumber @bind-Value="FormValues.BuildYear" />
         </label>
     </div>
+        <div class="col-sm-2">
+        </div>
     <div class="col-sm-2">
         <button>Spara</button>
     </div>
 </EditForm>
-
-<PicUpload houseId=@Id></PicUpload>
+<div></div>
 
 @if (submitted)
 {
     <p>Ändringar sparade.</p>
 }
 
+<PicViewer houseId=@Id></PicViewer>
+
+<PicUpload houseId=@Id></PicUpload>
+
 @code {
+    [SupplyParameterFromForm]
+    public string SelectedString { get; set; }
+
     [Parameter]
     public string Id { get; set; }
 
     [SupplyParameterFromForm]
     House FormValues { get; set; } = new();
+    [SupplyParameterFromForm]
     public Category? CategoryString { get; set; }
 
     [Inject]
     private ApiService ApiService { get; set; }
 
     bool submitted = false;
-    House NewHouseValues { get; set; } = new();  //Values from db including concurrency token
+    House NewHouseValues { get; set; } = new(); 
     int houseId;
+    List<Broker> Brokers { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
         if (FormValues.HouseId == 0)
         {
+            Brokers = await ApiService.GetAllBrokers();
             NewHouseValues = await ApiService.GetById(Int32.Parse(Id));
             FormValues.HouseId = NewHouseValues.HouseId;
             CategoryString = NewHouseValues.Category;
@@ -143,10 +159,6 @@
             FormValues.Error = NewHouseValues.Error;
             FormValues.BrokerId = NewHouseValues.BrokerId;
             FormValues.Broker = NewHouseValues.Broker;
-
-           // FormValues.Broker.Email = NewHouseValues.Broker.Email;
-
-            //houseId = NewHouseValues.HouseId;
         }
     }
 
@@ -156,7 +168,7 @@
         // Get values again, otherwise Broker gets lost in space...
         NewHouseValues = await ApiService.GetById(Int32.Parse(Id));
         NewHouseValues.HouseId = FormValues.HouseId;
-        NewHouseValues.Category = FormValues.Category.Value;
+        NewHouseValues.Category = CategoryString;
         NewHouseValues.PostalAddress = FormValues.PostalAddress;
         NewHouseValues.City = FormValues.City;
         NewHouseValues.AskingPrice = FormValues.AskingPrice;
@@ -169,8 +181,9 @@
         NewHouseValues.YearlyRunningCosts = FormValues.YearlyRunningCosts;
         NewHouseValues.BuildYear = FormValues.BuildYear;
         NewHouseValues.Error = FormValues.Error;
-        NewHouseValues.BrokerId = FormValues.BrokerId;
-        NewHouseValues.Broker = FormValues.Broker;
+        NewHouseValues.Broker = await ApiService.GetBrokerByEmail(SelectedString);
+        NewHouseValues.BrokerId = NewHouseValues.Broker.Id;
+
         var res = await ApiService.Edithouse(NewHouseValues);
     }
 }

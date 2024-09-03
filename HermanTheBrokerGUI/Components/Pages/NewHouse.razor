@@ -5,12 +5,12 @@
 <h3>Lägg till hus</h3>
 
 <EditForm Model="@FormValues" OnValidSubmit="Submit" FormName="edithouse">
-    <div class="col-sm-2">
+@*     <div class="col-sm-2">
         <label>
             Hus Id:
             <InputNumber @bind-Value="FormValues.HouseId" />
         </label>
-    </div>
+    </div> *@
     <div class="col-sm-2">
         <label>
             Kategori:
@@ -85,7 +85,11 @@
     <div class="col-sm-2">
         <label>
             Mäklare:
-            <InputText @bind-Value="FormValues!.BrokerId" />
+             <InputSelect @bind-Value="SelectedString">
+                @foreach(var br in Brokers) {
+                    <option value="@br">@br</option>
+                }
+            </InputSelect>
         </label>
     </div>
     <div class="col-sm-2">
@@ -109,7 +113,7 @@ else if (!res && submitted)
 
 @code {
     [SupplyParameterFromForm]
-    public string selectedString { get; set; }
+    public string SelectedString { get; set; }
     [SupplyParameterFromForm]
     public string selectedBrokerId { get; set; }
     [SupplyParameterFromForm]
@@ -132,7 +136,7 @@ else if (!res && submitted)
     private async Task Submit()
     {
         submitted = true;
-        FormValues.Broker = await ApiService.GetBrokerByEmail(selectedString);
+        FormValues.Broker = await ApiService.GetBrokerByEmail(SelectedString);
         FormValues.BrokerId = FormValues.Broker.Id;
         res = await ApiService.Newhouse(FormValues);
     }

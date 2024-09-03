@@ -7,13 +7,11 @@
 
 @if (fileCount <= maxAllowedFiles)
 {
-    <p>
-        <label>
+       <label>
             Ladda upp bilder på huset:
             <InputFile OnChange="LoadFiles" multiple />
-        </label>
+       </label>
     <p>Det finns @fileCount bilder på huset.</p>
-    </p>
 }
 else
 {
@@ -54,10 +52,16 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var path = Path.Combine(Environment.ContentRootPath,
-            Environment.EnvironmentName, "Uploads", houseId);
-        System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(path);
-        fileCount = dir.GetFiles().Length;
+        try
+        {
+            var path = Path.Combine("wwwroot/Pictures", "Uploads", houseId);
+            System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(path);
+            fileCount = dir.GetFiles().Length;
+        }
+        catch (Exception ex)
+        {
+            
+        }
     }
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
@@ -69,9 +73,7 @@ else
             try
             {
                 var fileName = file.Name;
-                // var path = Path.Combine(Environment.ContentRootPath,
-                //     Environment.EnvironmentName, "Uploads", houseId );
-                var path = Path.Combine("Pictures", "Uploads", houseId );
+                var path = Path.Combine("wwwroot/Pictures", "Uploads", houseId);
                 var wholePath = Path.Combine(path, fileName);
                 
                 bool exists = System.IO.Directory.Exists(path);
